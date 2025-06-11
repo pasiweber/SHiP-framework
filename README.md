@@ -142,7 +142,7 @@ Dataset | DC-0-Stab. | DC-1-MoE | DC-2-Elb. | CT-0-Stab. | CT-1-MoE | CT-2-Elb. 
 
 - `DC = DCTree`, `CT = CoverTree`
 - `Stab. = Stability`, `MoE = MedianOfElbows`, `Elb. = Elbow`
-- Competitors: [$k$-means](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html), [SCAR](https://github.com/SpectralClusteringAcceleratedRobust/SCAR), [Ward](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html), [AMD-DBSCAN](https://github.com/AlexandreWANG915/AMD-DBSCAN), [DPC](https://github.com/colinwke/dpca)
+- Competitors: [k-means](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.KMeans.html), [SCAR](https://github.com/SpectralClusteringAcceleratedRobust/SCAR), [Ward](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.AgglomerativeClustering.html), [AMD-DBSCAN](https://github.com/AlexandreWANG915/AMD-DBSCAN), [DPC](https://github.com/colinwke/dpca)
 
 
 ## License
