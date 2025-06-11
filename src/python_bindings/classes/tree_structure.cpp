@@ -8,7 +8,7 @@
 namespace py = pybind11;
 
 
-void bind_Node(py::module_ &m) {
+inline void bind_Node(py::module_ &m) {
     py::class_<Node, std::shared_ptr<Node>>(m, "Node")
         // Expose fields
         .def_readonly("id", &Node::id)
@@ -30,7 +30,7 @@ void bind_Node(py::module_ &m) {
              "Serialize the node to JSON, optionally including fast indexing information.");
 }
 
-void bind_Tree(py::module_ &m) {
+inline void bind_Tree(py::module_ &m) {
     py::class_<Tree, std::shared_ptr<Tree>>(m, "Tree")
 
         // Expose fields (read-write access)

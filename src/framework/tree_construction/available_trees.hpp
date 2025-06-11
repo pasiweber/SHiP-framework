@@ -5,26 +5,62 @@
 #include <utility>
 #include <vector>
 
-
-// UltrametricTreeType definition
+/*!
+ * \brief Types of ultrametric trees available in the SHiP framework.
+ *
+ * Enum class `UltrametricTreeType` representing supported ultrametric trees types.
+ */
 enum class UltrametricTreeType {
+    /// Load a previously constructed tree from a JSON file.
     LoadTree,
+
+    /// Density-Connected Tree (DCTree): a tree structure based on the density-connected distance (dc-distance). \rst:ref:`[1]<dc-dist>`\endrst.
     DCTree,
+
+    /// Hierarchically Separated Tree (HST): uses recursive metric partitions to ensure separation properties \rst:ref:`[2]<hst>`\endrst.
     HST,
+
+    /// Cover Tree: a fast, scalable data structure for nearest neighbor queries and clustering \rst:ref:`[3]<mlpack>`\endrst.
     CoverTree,
+
+    /// KD-Tree: partitions the data space along axis-aligned hyperplanes for efficient spatial queries \rst:ref:`[3]<mlpack>`\endrst.
     KDTree,
+
+    /// Variant of KD-Tree using mean splits instead of medians to construct the tree \rst:ref:`[3]<mlpack>`\endrst.
     MeanSplitKDTree,
+
+    /// Ball Tree: recursively partitions points into hyperspheres (balls), suitable for non-axis-aligned clusters \rst:ref:`[3]<mlpack>`\endrst.
     BallTree,
+
+    /// Variant of Ball Tree that uses mean splits instead of radius-based ones \rst:ref:`[3]<mlpack>`\endrst.
     MeanSplitBallTree,
+
+    /// Random Projection Tree (RP Tree): recursively splits data using random hyperplanes \rst:ref:`[3]<mlpack>`\endrst.
     RPTree,
+
+    /// Maximum-Spread RP Tree: a variant of RP Tree using splits that maximize spread or variance \rst:ref:`[3]<mlpack>`\endrst.
     MaxRPTree,
+
+    /// Upper Bound Tree (UBTree): a tree structure emphasizing similarity upper bounds for clustering \rst:ref:`[3]<mlpack>`\endrst.
     UBTree,
+
+    /// R-Tree: a dynamic index structure for spatial access methods using bounding rectangles \rst:ref:`[3]<mlpack>`\endrst.
     RTree,
+
+    /// R*-Tree: a refined R-Tree with better heuristics for node splitting and reinsertions \rst:ref:`[3]<mlpack>`\endrst.
     RStarTree,
+
+    /// X-Tree: an extended R-Tree variant that handles high-dimensional data by avoiding overlap \rst:ref:`[3]<mlpack>`\endrst.
     XTree,
+
+    /// Hilbert R-Tree: an R-Tree optimized using space-filling Hilbert curves to improve locality \rst:ref:`[3]<mlpack>`\endrst.
     HilbertRTree,
+
+    /// R+-Tree: avoids overlapping rectangles by splitting objects across multiple nodes \rst:ref:`[3]<mlpack>`\endrst.
     RPlusTree,
-    RPlusPlusTree,
+
+    /// R++-Tree: a further improvement over R+-Tree focusing on reduced overlap and better packing \rst:ref:`[3]<mlpack>`\endrst.
+    RPlusPlusTree
 };
 
 

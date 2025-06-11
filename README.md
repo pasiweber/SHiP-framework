@@ -3,7 +3,7 @@
 [![Tests](https://github.com/##42h7##/SHiP-framework/actions/workflows/publish_to_pypi.yml/badge.svg)](https://github.com/##42h7##/SHiP-framework/actions/workflows/publish_to_pypi.yml)
 [![Docs](https://readthedocs.org/projects/SHiP-framework/badge/?version=latest)](https://SHiP-framework.readthedocs.io/en/)
 
-This repository is the official implementation of the Similarity-Hierarchical-Partitioning (SHiP) clustering framework proposed in [Ultrametric Cluster Hierarchies: I Want `em All!](####) This framework provides a comprehensive approach to clustering by leveraging similarity trees, $(k,z)$-hierarchies, and various partitioning objective functions. 
+This repository is the official implementation of the Similarity-Hierarchical-Partitioning (SHiP) clustering framework proposed in [Ultrametric Cluster Hierarchies: I Want `em All!](https://github.com/##42h7##/SHiP-framework/) This framework provides a comprehensive approach to clustering by leveraging similarity trees, $(k,z)$-hierarchies, and various partitioning objective functions. 
 
 The whole project is implemented in C++ and Python bindings enable the usage within Python.
 
@@ -12,34 +12,34 @@ The whole project is implemented in C++ and Python bindings enable the usage wit
 The SHiP framework operates in three main stages:
 [![SHiP framework overview](https://raw.githubusercontent.com/##42h7##/SHiP-framework/main/docs/ClusterFrameworkOverview.png)](https://github.com/##42h7##/SHiP-framework/)
 
-1. **Similarity Tree Construction:** A similarity tree is built for the given dataset. This tree represents the relationships and proximities between data points. Note, that the default constructed tree corresponds to the $k$-center hierarchy (Section 3 in the paper).
+1. **Similarity Tree Construction:** A similarity tree is built for the given dataset. This tree represents the relationships and proximities between data points. Note that the default constructed tree corresponds to the $k$-center hierarchy (Section 3 in the paper).
 2. **$(k,z)$-Hierarchy Construction:** Using the similarity tree, a $(k,z)$-hierarchy can be constructed. These hierarchies correlate to common center based clustering methods, as e.g., $k$-median or $k$-means (Section 4).
 3. **Partitioning:** Finally, the data is partitioned based on the constructed hierarchy and a user-selected partitioning objective function (Section 5).
 
 
 ## Features
 - **Similarity Trees:** The package provides a set of similarity/ultrametric tree implementations:
-  - `DCTree`
-  - `HST` [1]
-  - `CoverTree` [2]
-  - `KDTree` [2]
-  - `MeanSplitKDTree` [2]
-  - `BallTree` [2]
-  - `MeanSplitBallTree` [2]
-  - `RPTree` [2]
-  - `MaxRPTree` [2]
-  - `UBTree` [2]
-  - `RTree` [2]
-  - `RStarTree` [2]
-  - `XTree` [2]
-  - `HilbertRTree` [2]
-  - `RPlusTree` [2]
-  - `RPlusPlusTree` [2]
+  - `DCTree` [[1]](#references)
+  - `HST` [[2]](#references)
+  - `CoverTree` [[3]](#references)
+  - `KDTree` [[3]](#references)
+  - `MeanSplitKDTree` [[3]](#references)
+  - `BallTree` [[3]](#references)
+  - `MeanSplitBallTree` [[3]](#references)
+  - `RPTree` [[3]](#references)
+  - `MaxRPTree` [[3]](#references)
+  - `UBTree` [[3]](#references)
+  - `RTree` [[3]](#references)
+  - `RStarTree` [[3]](#references)
+  - `XTree` [[3]](#references)
+  - `HilbertRTree` [[3]](#references)
+  - `RPlusTree` [[3]](#references)
+  - `RPlusPlusTree` [[3]](#references)
   - Or use `LoadTree` to load a precomputed tree
 
 
 - **$(k,z)$-Hierarchies:** It supports all possible $(k,z)$-hierarchies, allowing flexibility in choosing the most suitable hierarchy for a given dataset.
-  - $z = 0$ &rarr; $k$-center
+  - $z = 0$ &rarr; $k$-center (actually in theory: $z = ∞$, but in this implementation we use 0 for $∞$)
   - $z = 1$ &rarr; $k$-median
   - $z = 2$ &rarr; $k$-means
   - ...
@@ -62,7 +62,7 @@ The SHiP framework operates in three main stages:
 
 - **Customization:** Users can customize the framework by selecting from the available similarity trees, $(k,z)$-
 hierarchies, and partitioning functions.
-  - E.g., `DCTree` with $k$-median ($z=2$)-hierarchy and the `Elbow` partitioning method.
+  - E.g., `DCTree` with $k$-means ($z=2$)-hierarchy and the `Elbow` partitioning method.
     ```python
     from SHiP import SHiP
 
@@ -75,8 +75,7 @@ hierarchies, and partitioning functions.
 
 ## Installation
 ### Stable Version
-The current stable version can be installed by the following command:
-
+The current stable version can be installed by the following command:<br/>
 `pip install SHiP-framework` (coming soon)
 
 Note that a gcc compiler is required for installation.
@@ -85,18 +84,18 @@ Therefore, in case of an installation error, make sure that:
 - Linux/Mac: Python dev is installed (e.g., by running `apt-get install python-dev` - the exact command may differ depending on the linux distribution)
 
 The error messages may look like this:
-- `error: command 'gcc' failed: No such file or directory`
-- `Could not build wheels for SHiP-framework, which is required to install pyproject.toml-based projects`
-- `Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools`
+```
+error: command 'gcc' failed: No such file or directory
+Could not build wheels for SHiP-framework, which is required to install pyproject.toml-based projects
+Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools
+```
 
 
 ### Development Version
-The current development version can be installed directly from git by executing:
-
+The current development version can be installed directly from git by executing:<br/>
 `sudo pip install git+https://github.com/##42h7##/SHiP-framework.git`
 
-Alternatively, clone the repository, go to the root directory and execute:
-
+Alternatively, clone the repository, go to the root directory and execute:<br/>
 `pip install .`
 
 
@@ -147,12 +146,14 @@ Dataset | DC-0-Stab. | DC-1-MoE | DC-2-Elb. | CT-0-Stab. | CT-1-MoE | CT-2-Elb. 
 
 
 ## License
-The project is licensed under the BSD 3-Clause License (see [LICENSE.txt](LICENSE.txt)).
+The project is licensed under the BSD 3-Clause License (see [LICENSE.txt](https://github.com/##42h7##/SHiP-framework/blob/main/LICENSE.txt)).
 
 
 ## References
-[1] [HST+: An efficient index for embedding arbitrary metric spaces](https://ieeexplore.ieee.org/document/9458703/)
+[1] [Connecting the Dots -- Density-Connectivity Distance unifies DBSCAN, k-Center and Spectral Clustering](https://epub.ub.uni-muenchen.de/123737/)
+<br>
+[2] [HST+: An Efficient Index for Embedding Arbitrary Metric Spaces](https://ieeexplore.ieee.org/document/9458703/)
 ([Github](https://github.com/yzengal/ICDE21-HST))
 <br>
-[2] [mlpack 4: a fast, header-only C++ machine learning library](https://joss.theoj.org/papers/10.21105/joss.05026) 
+[3] [mlpack 4: a fast, header-only C++ machine learning library](https://joss.theoj.org/papers/10.21105/joss.05026) 
 ([Github](https://github.com/mlpack/mlpack))

@@ -118,7 +118,7 @@ bool check_tree_validity(std::shared_ptr<NodeType> root) {
                 LOG_ERROR << "Leave node '" << curr_node->id << "' (" << curr_node->cost << ") "
                           << "has an invalid ID ('" << curr_node->id << "' < 0)";
                 return false;
-            } else if (curr_node->id >= n) {
+            } else if (curr_node->id >= (long long)n) {
                 LOG_ERROR << "Leave node '" << curr_node->id << "' (" << curr_node->cost << ") "
                           << "has an invalid ID ('" << curr_node->id << "' >= n)";
                 return false;

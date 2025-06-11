@@ -11,3 +11,6 @@ __pycache__/
 CMakeUserPresets.json
 build/
 dist/
+
+docs/build/
+docs/doxygen

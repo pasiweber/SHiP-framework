@@ -6,22 +6,50 @@
 #include <vector>
 
 
-// PartitioningMethod definition
+/// \brief Available methods for partitioning a hierarchy into flat clusters.
 enum class PartitioningMethod {
+    /// Partition into a fixed number of clusters $k$.
     K,
+
+    /// Use the Elbow method to determine the optimal number of clusters.
     Elbow,
+
+    /// Cut the hierarchy at a fixed similarity threshold.
     Threshold,
+
+    /// Combine threshold cutting and the Elbow method for more adaptive partitioning.
     ThresholdElbow,
+
+    /// Use $q$-coverage to ensure that a given proportion of mass is retained in the clustering.
     QCoverage,
+
+    /// Combine $q$-coverage and the Elbow method for adaptive and coverage-aware partitioning.
     QCoverageElbow,
+
+    /// Use the $q$-stem criterion to extract partitions based on internal branch structure.
     QStem,
+
+    /// Combine $q$-stem with Elbow-based refinement for improved robustness.
     QStemElbow,
+
+    /// Elbow method that incorporates noise suppression using least common ancestors (LCA).
     LcaNoiseElbow,
+
+    /// Noise-aware Elbow method that excludes triangular merging to improve sharpness.
     LcaNoiseElbowNoTriangle,
+
+    /// Take the median of multiple Elbow criteria to find a more stable clustering.
     MedianOfElbows,
+
+    /// Take the mean of multiple Elbow criteria to smooth over noise in the hierarchy.
     MeanOfElbows,
+
+    /// Optimize cluster stability across multiple resolutions to find a robust partitioning, see also HDBSCAN.
     Stability,
+
+    /// Use normalized cluster stability to allow comparisons across hierarchies of different sizes.
     NormalizedStability,
+
     // PythonFunction,
 };
 

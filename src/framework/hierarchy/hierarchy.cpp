@@ -1,5 +1,3 @@
-#include "hierarchy.hpp"
-
 #include <framework/tree_structure.hpp>
 #include <pch.hpp>
 

@@ -1,6 +1,5 @@
 #include "tree_structure.hpp"
 
-#include <framework/hierarchy/hierarchy.hpp>
 #include <framework/partitioning/elbow_methods.hpp>
 #include <framework/partitioning/tree_partitioning.hpp>
 #include <framework/tree_construction/ultrametric_tree_structure.hpp>
