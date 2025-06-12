@@ -22,51 +22,96 @@ inline void bind_SHiP(py::module_ &m) {
 
         // Expose public data members
         .def_readonly("treeType", &SHiP::tree_type,
-                      "Which UltrametricTreeType to use.")
-        .def_readwrite("power", &SHiP::power,
-                       "Tree power (which z-hierarchy to use).")
-        .def_property("partitioningMethod",
-                      // getter
-                      ([](SHiP &self) {
-                          return self.partitioning_method;
-                      }),
-                      // setter
-                      ([](SHiP &self, py::object py_pm) {
-                          PartitioningMethod pm;
-                          if (py::isinstance<PartitioningMethod>(py_pm)) {
-                              pm = py_pm.cast<PartitioningMethod>();
-                          } else if (py::isinstance<py::str>(py_pm)) {
-                              pm = string_to_partitioning_method(py_pm.cast<std::string>());
-                          } else {
-                              LOG_ERROR << "`partitioningMethod` has invalid type: expected PartitioningMethod or str";
-                              throw std::invalid_argument("`partitioningMethod` has invalid type: expected PartitioningMethod or str");
-                          }
-                          self.partitioning_method = pm;
-                      }),
-                      "Partitioning strategy for extracting a clustering.")
-        .def_property("config",
-                      ([](SHiP &self) {
-                          return self.config;
-                      }),
-                      ([](SHiP &self, py::object cfg_obj) {
-                          if (!py::isinstance<py::dict>(cfg_obj))
-                              throw std::invalid_argument("config must be a dict");
-                          self.config = py_dict_to_string_map(cfg_obj.cast<py::dict>());
-                      }),
-                      "Additional string-based options.")
+                      R"pbdoc(
+            The ultrametric tree type used in clustering.
+
+            Specifies the ultrametric tree type used to construct the hierarchy (e.g., DCTree, CoverTree, etc.).
+            )pbdoc")
+
+        .def_readwrite("hierarchy", &SHiP::hierarchy,
+                       R"pbdoc(
+            Use the tree of this z-hierarchy for partitioning.
+
+            Defines the z-hierarchy to extract or work with.
+            )pbdoc")
+
+        .def_property(
+            "partitioningMethod",
+            // Getter
+            [](SHiP &self) {
+                return self.partitioning_method;
+            },
+            // Setter
+            [](SHiP &self, py::object py_pm) {
+                PartitioningMethod pm;
+                if (py::isinstance<PartitioningMethod>(py_pm)) {
+                    pm = py_pm.cast<PartitioningMethod>();
+                } else if (py::isinstance<py::str>(py_pm)) {
+                    pm = string_to_partitioning_method(py_pm.cast<std::string>());
+                } else {
+                    LOG_ERROR << "`partitioningMethod` has invalid type: expected PartitioningMethod or str";
+                    throw std::invalid_argument("`partitioningMethod` has invalid type: expected PartitioningMethod or str");
+                }
+                self.partitioning_method = pm;
+            },
+            R"pbdoc(
+            Use this strategy to extract clusters from the hierarchy.
+        
+            Can be set using a `PartitioningMethod` enum or its string representation.
+            )pbdoc")
+
+        .def_property(
+            "config",
+            // Getter
+            [](SHiP &self) {
+                return self.config;
+            },
+            // Setter
+            [](SHiP &self, py::object cfg_obj) {
+                if (!py::isinstance<py::dict>(cfg_obj))
+                    throw std::invalid_argument("`config` must be a dict");
+                self.config = py_dict_to_string_map(cfg_obj.cast<py::dict>());
+            },
+            R"pbdoc(
+            Additional configuration options.
+        
+            Dictionary of string-based key-value pairs.
+
+            **Example**:
+
+            .. code-block:: python
+
+                from SHiP import SHiP
+
+                ship = SHiP(data=data_points, treeType="DCTree", config={"min_points": 5})
+                labels = ship.fit_predict(hierarchy=2, partitioningMethod="K", config={"k": 10})
+
+            )pbdoc")
+
         .def_readonly("labels_", &SHiP::labels_,
-                      "Computed labels.")
+                      R"pbdoc(
+            Cluster labels assigned to each input point.
+
+            Available after calling `.fit()` or `.fit_predict()`.
+            )pbdoc")
+
         .def_readonly("partitioning_runtime", &SHiP::partitioning_runtime,
-                      "Time spent in the partitioning step (µs).")
+                      R"pbdoc(
+            Time spent during the partitioning phase (in microseconds).
+            )pbdoc")
+
         .def_readonly("tree_construction_runtime", &SHiP::tree_construction_runtime,
-                      "Construction times for the UltrametricTree and the z-hierarchies (µs).")
+                      R"pbdoc(
+            Dictionary containing the time spent for constructing the tree (key=0) and the z-hierarchies (key=z) (in microseconds).
+            )pbdoc")
+
 
         // Couple object attributes to the config dictionary of the SHiP object
         .def("__setattr__", [](SHiP &self, const std::string &name, py::object py_value) {
             // 0. Check for internal attributes
             static const std::set<std::string> attributes = {
                 "treeType",
-                "power",
+                "hierarchy",
                 "partitioningMethod",
                 "config",
                 "labels_",
@@ -91,7 +136,7 @@ inline void bind_SHiP(py::module_ &m) {
 
 
         /// Constructors ///
-        .def(py::init([](py::object py_data, py::object py_tt, long long power, py::object py_pm, const py::dict &py_cfg) {
+        .def(py::init([](py::object py_data, py::object py_tt, long long hierarchy, py::object py_pm, const py::dict &py_cfg) {
                  std::vector<std::vector<double>> data;
                  if (py::isinstance<py::array>(py_data)) {
                      data = pyarray_to_vector2D(py_data);
@@ -124,11 +169,11 @@ inline void bind_SHiP(py::module_ &m) {
 
                  return new SHiP(data,
                                  tt,
-                                 power,
+                                 hierarchy,
                                  pm,
                                  py_dict_to_string_map(py_cfg));
              }),
-             py::arg("data"), py::arg("treeType") = DEFAULT_ULTRAMETRIC_TREE_TYPE, py::arg("power") = DEFAULT_POWER, py::arg("partitioningMethod") = DEFAULT_PARTITIONING_METHOD, py::arg("config") = std::unordered_map<std::string, std::string>{}, R"pbdoc(
+             py::arg("data"), py::arg("treeType") = DEFAULT_ULTRAMETRIC_TREE_TYPE, py::arg("hierarchy") = DEFAULT_HIERARCHY, py::arg("partitioningMethod") = DEFAULT_PARTITIONING_METHOD, py::arg("config") = std::unordered_map<std::string, std::string>{}, R"pbdoc(
                 Constructs a SHiP clustering object.
 
                 Parameters
@@ -142,9 +187,9 @@ inline void bind_SHiP(py::module_ &m) {
                     Can be specified as an enum member (e.g., ``UltrametricTreeType.DCTree``)
                     or as a string (e.g., ``"DCTree"``). Defaults to ``DCTree``.
 
-                power : int, optional
-                    Power parameter used when transforming the similarity structure.
-                    Controls how distances are scaled. Default is ``2``.
+                hierarchy : int, optional
+                    Select hierarchy used when transforming the similarity structure.
+                    Controls how distances are scaled. (Distances to the center are taken to the power of `hierarchy`.) Default is ``2``.
 
                 partitioningMethod : Union[PartitioningMethod, str], optional
                     Partitioning strategy to extract flat clusters from the hierarchy.
@@ -164,11 +209,11 @@ inline void bind_SHiP(py::module_ &m) {
 
         /// Methods ///
         // fit
-        .def("fit", ([](SHiP &self, py::object py_power, py::object py_pm, const py::dict &py_cfg) {
-                 // Handle optional power
-                 std::optional<long long> power;
-                 if (!py_power.is_none()) {
-                     power = py_power.cast<long long>();
+        .def("fit", ([](SHiP &self, py::object py_hierarchy, py::object py_pm, const py::dict &py_cfg) {
+                 // Handle optional hierarchy parameter
+                 std::optional<long long> hierarchy;
+                 if (!py_hierarchy.is_none()) {
+                    hierarchy = py_hierarchy.cast<long long>();
                  }
 
                  // Handle optional partitioning method
@@ -185,9 +230,9 @@ inline void bind_SHiP(py::module_ &m) {
                  }
 
                  // Call C++ function with std::optional
-                 return self.fit(power, pm, py_dict_to_string_map(py_cfg));
+                 return self.fit(hierarchy, pm, py_dict_to_string_map(py_cfg));
              }),
-             py::arg("power") = py::none(), py::arg("partitioningMethod") = py::none(), py::arg("config") = std::unordered_map<std::string, std::string>{}, R"pbdoc(
+             py::arg("hierarchy") = py::none(), py::arg("partitioningMethod") = py::none(), py::arg("config") = std::unordered_map<std::string, std::string>{}, R"pbdoc(
         Apply clustering by extracting a partition from the computed hierarchy.
 
         This method applies a specified partitioning method (or the default) to produce a flat clustering
@@ -195,8 +240,8 @@ inline void bind_SHiP(py::module_ &m) {
 
         Parameters
         ----------
-        power : int, optional
-            Power exponent used for hierarchy construction. If not provided, the value from initialization is used.
+        hierarchy : int, optional
+            Which hierarchy (power exponent) to use for tree construction. If not provided, the value from initialization is used.
 
         partitioningMethod : PartitioningMethod or str, optional
             The strategy used to extract a flat partition from the hierarchy. Can be a member of the
@@ -222,11 +267,11 @@ inline void bind_SHiP(py::module_ &m) {
 
 
         // fit_predict
-        .def("fit_predict", ([](SHiP &self, py::object py_power, py::object py_pm, const py::dict &py_cfg) {
-                 // Handle optional power
-                 std::optional<long long> power;
-                 if (!py_power.is_none()) {
-                     power = py_power.cast<long long>();
+        .def("fit_predict", ([](SHiP &self, py::object py_hierarchy, py::object py_pm, const py::dict &py_cfg) {
+                 // Handle optional hierarchy parameter
+                 std::optional<long long> hierarchy;
+                 if (!py_hierarchy.is_none()) {
+                     hierarchy = py_hierarchy.cast<long long>();
                  }
 
                  // Handle optional partitioning method
@@ -242,9 +287,9 @@ inline void bind_SHiP(py::module_ &m) {
                      }
                  }
 
-                 return self.fit_predict(power, pm, py_dict_to_string_map(py_cfg));
+                 return self.fit_predict(hierarchy, pm, py_dict_to_string_map(py_cfg));
              }),
-             py::arg("power") = py::none(), py::arg("partitioningMethod") = py::none(), py::arg("config") = std::unordered_map<std::string, std::string>{}, R"pbdoc(
+             py::arg("hierarchy") = py::none(), py::arg("partitioningMethod") = py::none(), py::arg("config") = std::unordered_map<std::string, std::string>{}, R"pbdoc(
         Fit the SHiP model and return cluster labels.
 
         This method performs all necessary steps to build the similarity tree, generate a clustering hierarchy,
@@ -252,8 +297,8 @@ inline void bind_SHiP(py::module_ &m) {
 
         Parameters
         ----------
-        power : int, optional
-            Power exponent used in the hierarchy construction phase. If not provided, uses the default or value
+        hierarchy : int, optional
+            Which hierarchy (power exponent) to use for tree construction. If not provided, uses the default or value
             passed during initialization.
 
         partitioningMethod : PartitioningMethod or str, optional
@@ -280,15 +325,15 @@ inline void bind_SHiP(py::module_ &m) {
 
 
         // get_tree
-        .def("get_tree", &SHiP::get_tree, py::arg("power") = 0,
+        .def("get_tree", &SHiP::get_tree, py::arg("hierarchy") = 0,
              R"pbdoc(
-           Retrieve the similarity tree constructed for a given power.
-   
+           Retrieve the similarity tree constructed of a given hierarchy.
+
            Parameters
            ----------
-           power : int, optional
-               The power exponent used when computing the ultrametric tree. If set to `0`, uses the default power.
-   
+           hierarchy : int, optional
+               Get the ultrametric tree of `hierarchy`. Default is the base tree (`hierarchy=0`).
+
            Returns
            -------
            Tree

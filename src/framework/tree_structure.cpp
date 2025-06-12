@@ -6,11 +6,11 @@
 #include <pch.hpp>
 
 
-Tree::Tree(std::shared_ptr<Node> root, std::vector<std::vector<double>>& data, UltrametricTreeType tree_type, long long power, const std::unordered_map<std::string, std::string>& config) : tree_type(tree_type), power(power), config(config) {
-    // Annotate tree to get the k_clustering for the current power
+Tree::Tree(std::shared_ptr<Node> root, std::vector<std::vector<double>>& data, UltrametricTreeType tree_type, long long hierarchy, const std::unordered_map<std::string, std::string>& config) : tree_type(tree_type), hierarchy(hierarchy), config(config) {
+    // Annotate tree to get the k_clustering for the current hierarchy
     this->annotate_tree(root, data);
 
-    if (power == 0) {
+    if (hierarchy == 0) {
         this->root = root;
     } else {
         // Build the new tree from the annotated information
@@ -28,7 +28,7 @@ Tree::Tree(std::shared_ptr<Node> root, std::vector<std::vector<double>>& data, U
     this->compute_sorted_nodes();
     this->compute_sorted_costs();
 
-    if (power == 0) {
+    if (hierarchy == 0) {
         this->assign_nodes_their_k_values();
     }
 }
@@ -124,6 +124,28 @@ void Tree::assign_nodes_their_k_values() {
             }
         }
     }
+}
+
+
+std::vector<std::vector<double>> Tree::get_distance_matrix() {
+    unsigned long long n = this->root->size;
+    std::vector<std::vector<double>> distance_matrix(n, std::vector<double>(n));
+
+#pragma omp parallel for schedule(dynamic)
+    for (std::shared_ptr<Node> node : this->sorted_nodes) {
+        for (size_t i = 0; i < node->children.size(); ++i) {
+            for (size_t j = i + 1; j < node->children.size(); ++j) {
+                for (long long left = node->children[i]->low; left <= node->children[i]->high; ++left) {
+                    for (long long right = node->children[j]->low; right <= node->children[j]->high; ++right) {
+                        size_t u = this->index_order[left];
+                        size_t v = this->index_order[right];
+                        distance_matrix[u][v] = distance_matrix[v][u] = node->cost;
+                    }
+                }
+            }
+        }
+    }
+    return distance_matrix;
 }
 
 

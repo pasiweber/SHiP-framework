@@ -253,7 +253,7 @@ void Tree::get_k_solution_helper(long long k, std::shared_ptr<Node> fullTree, st
 */
 void Tree::label_tree(std::vector<long long>& res, std::shared_ptr<Node> tree, long long label) {
     for (long long i = tree->low; i <= tree->high; i++) {
-        long long id = index_order[i];
+        long long id = this->index_order[i];
         res[id] = label;
     }
 }

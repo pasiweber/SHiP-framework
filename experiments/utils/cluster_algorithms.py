@@ -55,8 +55,8 @@ def run_DBSCAN(X, min_pts = 5):
     dbscan.fit(X)
     return dbscan.labels_
 
-def run_SHiP(X, treeType, power, partitioningMethod, config = {}):
-    ship = SHiP(X, treeType, power, partitioningMethod, config)
+def run_SHiP(X, treeType, hierarchy, partitioningMethod, config = {}):
+    ship = SHiP(X, treeType, hierarchy, partitioningMethod, config)
     return ship.fit_predict()
 
 # \emph{ground truth} clustering, \emph{$k$-center} over Euclidean metric, \emph{$k$-means} over Euclidean metric, \emph{$kd$-tree/$k$-center/$k$}, \emph{$kd$-tree/$k$-means/$k$}, \emph{$kd$-tree/$k$-means/$k$*} with $k$ chosen by elbow-method, \emph{$kd$-tree/$k$-means/norm.stability} 

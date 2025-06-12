@@ -28,51 +28,51 @@ std::vector<long long> SHiP::partitioning() {
     switch (this->partitioning_method) {
         case PartitioningMethod::K: {
             long long k = get_config_value_in_range<long long>(this->config, "k", 2, 1, this->data.size(), true);
-            return this->get_tree(this->power)->kcenter_cut(k);
+            return this->get_tree(this->hierarchy)->kcenter_cut(k);
         }
 
         case PartitioningMethod::Elbow: {
-            unsigned long long k = this->get_tree(this->power)->get_elbow_k();
-            return this->get_tree(this->power)->kcenter_cut(k);
+            unsigned long long k = this->get_tree(this->hierarchy)->get_elbow_k();
+            return this->get_tree(this->hierarchy)->kcenter_cut(k);
         }
 
         case PartitioningMethod::Threshold: {
             long long k = get_config_value_in_range<long long>(this->config, "k", 2, 1, this->data.size(), true);
-            return this->get_tree(this->power)->threshold_cut(k);
+            return this->get_tree(this->hierarchy)->threshold_cut(k);
         }
 
         case PartitioningMethod::ThresholdElbow: {
-            return this->get_tree(this->power)->threshold_elbow_cut();
+            return this->get_tree(this->hierarchy)->threshold_elbow_cut();
         }
 
         case PartitioningMethod::QCoverage: {
             long long k = get_config_value_in_range<long long>(this->config, "k", 2, 1, this->data.size(), true);
             long long min_cluster_size = get_config_value_in_range<long long>(this->config, "min_cluster_size", 5, 1, this->data.size());
-            return this->get_tree(this->power)->threshold_q_coverage(k, min_cluster_size);
+            return this->get_tree(this->hierarchy)->threshold_q_coverage(k, min_cluster_size);
         }
 
         case PartitioningMethod::QCoverageElbow: {
             long long min_cluster_size = get_config_value_in_range<long long>(this->config, "min_cluster_size", 5, 1, this->data.size());
-            return this->get_tree(this->power)->threshold_q_coverage(0, min_cluster_size, false, true);
+            return this->get_tree(this->hierarchy)->threshold_q_coverage(0, min_cluster_size, false, true);
         }
 
         case PartitioningMethod::QStem: {
             long long k = get_config_value_in_range<long long>(this->config, "k", 2, 1, this->data.size(), true);
             long long min_cluster_size = get_config_value_in_range<long long>(this->config, "min_cluster_size", 5, 1, this->data.size());
-            return this->get_tree(this->power)->threshold_q_coverage(k, min_cluster_size, true, false);
+            return this->get_tree(this->hierarchy)->threshold_q_coverage(k, min_cluster_size, true, false);
         }
 
         case PartitioningMethod::QStemElbow: {
             long long min_cluster_size = get_config_value_in_range<long long>(this->config, "min_cluster_size", 5, 1, this->data.size());
-            return this->get_tree(this->power)->threshold_q_coverage(0, min_cluster_size, true, true, true);
+            return this->get_tree(this->hierarchy)->threshold_q_coverage(0, min_cluster_size, true, true, true);
         }
 
         case PartitioningMethod::LcaNoiseElbow: {
-            return this->get_tree(this->power)->get_lca_prune_solution();
+            return this->get_tree(this->hierarchy)->get_lca_prune_solution();
         }
 
         case PartitioningMethod::LcaNoiseElbowNoTriangle: {
-            return this->get_tree(this->power)->get_lca_prune_solution(false);
+            return this->get_tree(this->hierarchy)->get_lca_prune_solution(false);
         }
 
         case PartitioningMethod::MedianOfElbows: {
@@ -90,7 +90,7 @@ std::vector<long long> SHiP::partitioning() {
             }
 
             long long median = getMedianK(vec);
-            return this->get_tree(this->power)->threshold_cut(median);
+            return this->get_tree(this->hierarchy)->threshold_cut(median);
         }
 
         case PartitioningMethod::MeanOfElbows: {
@@ -108,17 +108,17 @@ std::vector<long long> SHiP::partitioning() {
             }
 
             long long mean = getMeanK(vec);
-            return this->get_tree(this->power)->threshold_cut(mean);
+            return this->get_tree(this->hierarchy)->threshold_cut(mean);
         }
 
         case PartitioningMethod::Stability: {
             long long min_cluster_size = get_config_value_in_range<long long>(this->config, "min_cluster_size", 5, 1, this->data.size());
-            return this->get_tree(this->power)->stability_cut(min_cluster_size);
+            return this->get_tree(this->hierarchy)->stability_cut(min_cluster_size);
         }
 
         case PartitioningMethod::NormalizedStability: {
             long long min_cluster_size = get_config_value_in_range<long long>(this->config, "min_cluster_size", 5, 1, this->data.size());
-            return this->get_tree(this->power)->normalized_stability_cut(min_cluster_size);
+            return this->get_tree(this->hierarchy)->normalized_stability_cut(min_cluster_size);
         }
 
             // case PartitioningMethod::PythonFunction: {
@@ -126,7 +126,7 @@ std::vector<long long> SHiP::partitioning() {
             //     SHiP ship(min_points, min_cluster_size, partitioning_function);
             //     ship.fit(this->data);
             //     this->labels_.push_back(ship.labels_);
-            //     return this->get_tree(this->power)->
+            //     return this->get_tree(this->hierarchy)->
             // }
 
             // SHiP(long long min_points,

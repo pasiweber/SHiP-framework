@@ -38,14 +38,14 @@ PYBIND11_MODULE(SHiP, m) {
         SHiP allows users to mix and match components (trees, hierarchies, partitioning objectives)
         for fully customized clustering workflows.
 
-        Example
-        -------
+        **Example**
+
         .. code-block:: python
     
             from SHiP import SHiP
     
             ship = SHiP(data=data_points, treeType="DCTree")
-            labels = ship.fit_predict(power=2, partitioningMethod="Elbow")
+            labels = ship.fit_predict(hierarchy=2, partitioningMethod="Elbow")
 
         | **Implementation**
         | The core of the project is implemented in C++, with Python bindings provided via pybind11.

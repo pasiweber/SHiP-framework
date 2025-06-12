@@ -92,15 +92,21 @@ void Tree::annotate_tree(std::shared_ptr<Node> root, std::vector<std::vector<dou
         return *a > *b;
     });
 
-    // Create the tree with heuristics based placement of equidistant branches. This is why we need the dataset here.
-    std::vector<std::string> keys = {"tiebreaker_method", "tiebreaker"};
-    std::vector<std::string> euclidean_aliases = {"euclidean_distance", "euclidean_dist", "euclidean"};
-    std::string tiebreaker_method = get_config_value(this->config, keys, euclidean_aliases[0]);
-    if (check_key_occurs(tiebreaker_method, euclidean_aliases)) {
-        optimize_annotations(root, data);
-    } else if (tiebreaker_method != "random") {
-        LOG_WARN << "Invalid value for '" << keys[0] << "': '" << tiebreaker_method
-                 << "'. Using default: '" << euclidean_aliases[0] << "'";
+    // Only apply heuristic if it is not the base tree
+    if (this->hierarchy != 0) {
+        // Create the tree with heuristics based placement of equidistant branches. This is why we need the dataset here.
+        std::vector<std::string> keys = {"tiebreaker_method", "tiebreaker"};
+        std::vector<std::string> euclidean_aliases = {"euclidean_distance", "euclidean_dist", "euclidean"};
+        std::string tiebreaker_method = get_config_value(this->config, keys, euclidean_aliases[0]);
+        if (tiebreaker_method == "random") {
+            // Do nothing.
+        } else if (check_key_occurs(tiebreaker_method, euclidean_aliases)) {
+            optimize_annotations(root, data);
+        } else {
+            LOG_WARN << "Invalid value for '" << keys[0] << "': '" << tiebreaker_method
+                     << "'. Using default: '" << euclidean_aliases[0] << "'";
+            optimize_annotations(root, data);
+        }
     }
 
     this->cost_decreases.clear();
@@ -166,7 +172,69 @@ std::shared_ptr<Node> Tree::create_centroids_hierarchy() {
 //################################ OPT TREE COMP ###################################
 
 
-double Tree::sq_euclid_dist(std::vector<double>& p1, std::vector<double>& p2) {
+/*
+    Computes the mean representative point for each node in the tree bottom up.
+    Also "resets" k_markings and closest center values.
+*/
+void Tree::compute_representatives(std::shared_ptr<Node> root,
+                                   std::vector<std::vector<double>>& data) {
+    const size_t dim = data[0].size();
+    std::vector<double> new_representative(dim);
+
+    std::vector<std::pair<std::shared_ptr<Node>, bool>> stack;
+    stack.reserve(sorted_nodes.size() * 2);
+    stack.emplace_back(root, false);
+
+    while (!stack.empty()) {
+        auto [node, children_done] = stack.back();
+        stack.pop_back();
+
+        // Reset per-node state
+        node->k_marking = -1;
+        node->closest_center = std::numeric_limits<double>::infinity();
+
+        if (node->children.empty()) {
+            // Leaf: representative is the original data point
+            node->representative = data[node->id];
+        } else {
+            if (!children_done) {
+                // Push node back for post-order processing
+                stack.emplace_back(node, true);
+                // Then push children
+                for (auto& child : node->children) {
+                    stack.emplace_back(child, false);
+                }
+            } else {
+                // Post-order: combine child representatives into 'new_representative'
+                std::fill(new_representative.begin(), new_representative.end(), 0.0);
+
+                // Sum weight-scaled child reps
+                for (auto& child : node->children) {
+                    const auto& cluster_representative = child->representative;
+                    double size = static_cast<double>(child->size);
+                    // Pointer iteration is even faster:
+                    for (size_t i = 0; i < dim; ++i) {
+                        new_representative[i] += cluster_representative[i] * size;
+                    }
+                }
+
+                // Normalize by this node’s size
+                double inv_size = 1.0 / static_cast<double>(node->size);
+                for (size_t i = 0; i < dim; ++i) {
+                    new_representative[i] *= inv_size;
+                }
+
+                // Move the result into the node (avoid an extra copy)
+                node->representative = std::move(new_representative);
+                // Restore new_representative size for reuse
+                new_representative.assign(dim, 0.0);
+            }
+        }
+    }
+}
+
+
+inline double Tree::sq_euclid_dist(std::vector<double>& p1, std::vector<double>& p2) {
     long long dim = p1.size();
     double total = 0;
     for (long long i = 0; i < dim; i++) {
@@ -181,65 +249,43 @@ double Tree::sq_euclid_dist(std::vector<double>& p1, std::vector<double>& p2) {
     Goes from the given start node and moves to the root, and checks if its representative is closer to equidistant points than current best equidistant point.
 */
 void Tree::update_pointers(std::vector<double>& center, std::shared_ptr<Annotation> curr_anno, std::shared_ptr<Node> start_node, long long k) {
+    // Mark the start node immediately
     start_node->k_marking = k;
-    std::shared_ptr<Node> curr_node = start_node->parent.lock();
-    while (curr_node != nullptr) {
-        if (curr_node->k_marking == -1) {
-            curr_node->k_marking = k;
+
+    // Cache the cost_decrease of the current annotation once
+    const double curr_cost_dec = curr_anno->cost_decrease;
+
+    // Traverse up the tree via raw pointers rather than repeated weak_ptr.lock()
+    Node* node = start_node->parent.lock().get();
+    while (node) {
+        // Mark this node if not already done
+        if (node->k_marking == -1) {
+            node->k_marking = k;
         }
-        for (std::shared_ptr<Node> child : curr_node->children) {
-            if (child->k_marking == -1) {  // We only care about unmarked subtrees
+
+        for (auto& child_ptr : node->children) {
+            Node* child = child_ptr.get();
+
+            if (child->k_marking != -1)
+                continue;  // skip already‐marked subtrees
+
+            // ensure that we with triplets do not make weird double nodes
+            if (child->anno->cost_decrease != curr_cost_dec) {
+                // Compute squared Euclidean distance
                 double dist = sq_euclid_dist(center, child->representative);
-                if (dist < child->closest_center && child->anno->cost_decrease != curr_anno->cost_decrease) {  // The rhs here is to ensure that we with triplets do not make weird double nodes.
+
+                // Update if this center is closer
+                if (dist < child->closest_center) {
                     child->closest_center = dist;
-                    child->anno->parent = curr_anno;  // This might just update the annotation to be the current one anyway
+                    child->anno->parent = curr_anno;
                 }
             }
         }
-        curr_node = curr_node->parent.lock();
+
+        // Move up once more
+        node = node->parent.lock().get();
     }
 }
-
-
-/*
-    Computes the mean representative point for each node in the tree bottom up.
-    Also "resets" k_markings and closest center values.
-*/
-void Tree::compute_representatives(std::shared_ptr<Node> root, std::vector<std::vector<double>>& data) {
-    std::vector<std::pair<std::shared_ptr<Node>, bool>> stack;
-    stack.emplace_back(root, false);
-    while (!stack.empty()) {
-        auto [node, processed_children] = stack.back();
-        stack.pop_back();
-        node->k_marking = -1;
-        node->closest_center = std::numeric_limits<double>::infinity();
-
-        if (node->children.empty()) {
-            node->representative = data[node->id];
-        } else {
-            if (!processed_children) {
-                stack.emplace_back(node, true);
-                for (std::shared_ptr<Node> child : node->children) {
-                    stack.emplace_back(child, false);
-                }
-            } else {
-                long long dim = data[0].size();
-                std::vector<double> new_rep(dim, 0);
-                for (std::shared_ptr<Node> child : node->children) {
-                    std::vector<double>& c_rep = child->representative;
-                    for (long long i = 0; i < dim; i++) {
-                        new_rep[i] += c_rep[i] * (double)child->size;
-                    }
-                }
-                for (long long i = 0; i < dim; i++) {
-                    new_rep[i] /= (double)node->size;
-                }
-                node->representative = new_rep;
-            }
-        }
-    }
-}
-
 
 /*
     Gets as input the sorted list of annotations.

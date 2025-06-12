@@ -59,15 +59,15 @@ for dataset in DATASETS:
             }
             ship = SHiP(data=points, treeType=treeType, config=config)
 
-            for power in HIERARCHIES:
+            for hierarchy in HIERARCHIES:
                 for partitioningMethod in PARTITIONING_METHODS:
-                    ship.power = power
+                    ship.hierarchy = hierarchy
                     ship.partitioningMethod = partitioningMethod
 
-                    labels = ship.fit_predict(power, partitioningMethod)
+                    labels = ship.fit_predict(hierarchy, partitioningMethod)
 
                     # if treeType == UTreeType.DCTree and partitioningMethod in [PType.MedianOfElbows, PType.MeanOfElbows]:
-                    #     print(f"power: {power}, partitioningMethod: {partitioningMethod}", end=" - ")
+                    #     print(f"hierarchy: {hierarchy}, partitioningMethod: {partitioningMethod}", end=" - ")
                     #     print(f"ARI: {round(ari(labels, ground_truth), 2):3.2f}")
 
                     if len(labels) != len(points):

@@ -115,7 +115,7 @@ class Tree {
 public:
     std::shared_ptr<Node> root;
     UltrametricTreeType tree_type;
-    long long power;
+    long long hierarchy;
     std::unordered_map<std::string, std::string> config;
 
     // Indexes for smart access
@@ -124,7 +124,7 @@ public:
     std::vector<std::shared_ptr<Node>> sorted_nodes;
     std::vector<std::shared_ptr<Annotation>> k_solutions;
     double max_cost;
-    std::vector<double> costs;  // For elbow method. These are sorted already.
+    std::vector<double> costs;           // For elbow method. These are sorted already.
     std::vector<double> cost_decreases;  // For elbow method. These are sorted already.
 
 
@@ -135,19 +135,19 @@ public:
         This ensures it is easy to get out k solutions efficiently afterwards.
         Internal nodes end up having id of the center / cluster that its leaves will be part of.
     */
-    Tree(std::shared_ptr<Node> root, std::vector<std::vector<double>>& data, UltrametricTreeType tree_type, long long power, const std::unordered_map<std::string, std::string>& config = {});
-
-
-    std::string to_json(bool fast_index = false);
-
+    Tree(std::shared_ptr<Node> root, std::vector<std::vector<double>>& data, UltrametricTreeType tree_type, long long hierarchy, const std::unordered_map<std::string, std::string>& config = {});
 
     double cost_function(double value) {
-        if (this->power <= 1) {
+        if (this->hierarchy <= 1) {
             return value;
         } else {
-            return std::pow(value, this->power);
+            return std::pow(value, this->hierarchy);
         }
     }
+
+    std::vector<std::vector<double>> get_distance_matrix();
+
+    std::string to_json(bool fast_index = false);
 
 
     /*

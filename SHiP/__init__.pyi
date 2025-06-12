@@ -4,7 +4,7 @@ import numpy as np
 
 class SHiP:
     treeType: ultrametric_tree.UltrametricTreeType  # read-only
-    power: int
+    hierarchy: int
     partitioningMethod: partitioning.PartitioningMethod | str
     config: dict
 
@@ -17,22 +17,21 @@ class SHiP:
         self,
         data: list[list[float]] | np.ndarray,
         treeType: ultrametric_tree.UltrametricTreeType | str = ...,
-        power: int = ...,
+        hierarchy: int = ...,
         partitioningMethod: partitioning.PartitioningMethod | str = ...,
         config: dict = ...,
     ) -> None: ...
     def fit(
         self,
-        power: int = ...,
+        hierarchy: int = ...,
         partitioningMethod: partitioning.PartitioningMethod | str = ...,
     ) -> None: ...
     def fit_predict(
         self,
-        power: int = ...,
+        hierarchy: int = ...,
         partitioningMethod: partitioning.PartitioningMethod | str = ...,
     ) -> list[int]: ...
-    def get_tree(self, power: int = 0) -> Tree: ...
-
+    def get_tree(self, hierarchy: int = 0) -> Tree: ...
 
 class Node:
     id: int
@@ -48,11 +47,10 @@ class Node:
     def __gt__(self, other: "Node") -> bool: ...
     def to_json(self, fast_index: bool = False) -> str: ...
 
-
 class Tree:
     root: Node
     tree_type: ultrametric_tree.UltrametricTreeType
-    power: int
+    hierarchy: int
     config: Dict[str, str]
     index_order: List[int]
     sorted_nodes: List[Node]

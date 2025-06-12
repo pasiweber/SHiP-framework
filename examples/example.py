@@ -14,9 +14,9 @@ X = data.data
 gt_labels = data.target
 
 
-# Decide for a UltrametricTreeType, Hierarchy (power), and PartitioningMethod
+# Decide for a UltrametricTreeType, Hierarchy, and PartitioningMethod
 treeType = UTreeType.DCTree
-power = 2
+hierarchy = 2
 partitioningMethod = PMethod.Elbow
 
 # Provide additional parameters (only used depending on the chosen partitioningMethod)
@@ -30,8 +30,8 @@ config = {
 
 # Build the tree by initializing an SHiP object
 ship = SHiP(data=X, treeType=treeType, config=config)
-# Extract the labels with the provided power and partitioningMethod
-labels = ship.fit_predict(power, partitioningMethod)
+# Extract the labels with the provided hierarchy and partitioningMethod
+labels = ship.fit_predict(hierarchy, partitioningMethod)
 
 print(
     f"ARI: {round(ari(gt_labels, labels), 2):3.2f}, #labels: {len(set(labels))}, tree_construction_runtime: {round(ship.tree_construction_runtime[0] / 1000)}ms, partitioning_runtime: {ship.partitioning_runtime}µs"

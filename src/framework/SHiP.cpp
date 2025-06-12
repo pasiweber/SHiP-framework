@@ -6,9 +6,9 @@
 
 SHiP::SHiP(std::vector<std::vector<double>>& data,
            UltrametricTreeType tree_type,
-           long long power,
+           long long hierarchy,
            PartitioningMethod partitioning_method,
-           const std::unordered_map<std::string, std::string>& config) : data(data), tree_type(tree_type), power(power), partitioning_method(partitioning_method), config(config) {
+           const std::unordered_map<std::string, std::string>& config) : data(data), tree_type(tree_type), hierarchy(hierarchy), partitioning_method(partitioning_method), config(config) {
     auto [tree, tree_construction_runtime] = measure_runtime<std::chrono::microseconds>(
         [this, &data]() {
             return this->construct_base_tree(data);
@@ -19,9 +19,9 @@ SHiP::SHiP(std::vector<std::vector<double>>& data,
 }
 
 // Methods
-void SHiP::fit(std::optional<long long> power, std::optional<PartitioningMethod> partitioning_method, const std::unordered_map<std::string, std::string>& config) {
-    if (power.has_value()) {
-        this->power = power.value();
+void SHiP::fit(std::optional<long long> hierarchy, std::optional<PartitioningMethod> partitioning_method, const std::unordered_map<std::string, std::string>& config) {
+    if (hierarchy.has_value()) {
+        this->hierarchy = hierarchy.value();
     }
     if (partitioning_method.has_value()) {
         this->partitioning_method = partitioning_method.value();
@@ -48,8 +48,8 @@ void SHiP::fit(std::optional<long long> power, std::optional<PartitioningMethod>
     this->partitioning_runtime = partitioning_runtime - additional_tree_constructions_runtime;
 }
 
-std::vector<long long> SHiP::fit_predict(std::optional<long long> power, std::optional<PartitioningMethod> partitioning_method, const std::unordered_map<std::string, std::string>& config) {
-    this->fit(power, partitioning_method, config);
+std::vector<long long> SHiP::fit_predict(std::optional<long long> hierarchy, std::optional<PartitioningMethod> partitioning_method, const std::unordered_map<std::string, std::string>& config) {
+    this->fit(hierarchy, partitioning_method, config);
     return this->labels_;
 }
 
@@ -65,23 +65,23 @@ std::shared_ptr<Tree> SHiP::construct_base_tree(std::vector<std::vector<double>>
 }
 
 
-std::shared_ptr<Tree> SHiP::get_tree(long long power) {
-    auto it = this->trees.find(power);
+std::shared_ptr<Tree> SHiP::get_tree(long long hierarchy) {
+    auto it = this->trees.find(hierarchy);
     if (it != this->trees.end()) {
         return it->second;
     }
 
-    if (power == 0) {
+    if (hierarchy == 0) {
         LOG_ERROR << "Base tree has not been constructed.";
         throw std::runtime_error("Base tree not found.");
     } else {
         auto [tree, tree_construction_runtime] = measure_runtime<std::chrono::microseconds>(
-            [this, power]() {
-                return std::make_shared<Tree>(this->get_tree(0)->root, this->data, this->tree_type, power, this->config);
+            [this, hierarchy]() {
+                return std::make_shared<Tree>(this->get_tree(0)->root, this->data, this->tree_type, hierarchy, this->config);
             });
-        this->tree_construction_runtime[power] = tree_construction_runtime;
+        this->tree_construction_runtime[hierarchy] = tree_construction_runtime;
 
-        trees.emplace(power, tree);
+        trees.emplace(hierarchy, tree);
         return tree;
     }
 }

@@ -77,7 +77,7 @@ Example:
    from SHiP.partitioning import PartitioningMethod
 
    ship = SHiP(data=my_data, treeType=UltrametricTreeType.DCTree)
-   labels = ship.fit_predict(power=2, partitioningMethod=PartitioningMethod.Elbow)
+   labels = ship.fit_predict(hierarchy=2, partitioningMethod=PartitioningMethod.Elbow)
 
 
 .. toctree::

@@ -16,8 +16,7 @@ std::shared_ptr<UltrametricTreeNode> convert_from_DCTree(std::shared_ptr<Ultrame
     return root;
 }
 
-UltrametricTree build_from_DCTree(
-    std::vector<std::vector<double>> &data, const std::unordered_map<std::string, std::string> &config) {
+UltrametricTree build_from_DCTree(std::vector<std::vector<double>> &data, const std::unordered_map<std::string, std::string> &config) {
     std::shared_ptr<UltrametricTreeNode> root = build_DCTree(data, config);
     std::shared_ptr<UltrametricTreeNode> tree = convert_from_DCTree(root);
     return UltrametricTree{tree, UltrametricTreeType::DCTree, config};

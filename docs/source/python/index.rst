@@ -36,7 +36,7 @@ Import the main SHiP class to construct a similarity tree and cluster the tree b
     ship = SHiP(data=my_data, treeType="DCTree")
 
     # Perform clustering with chosen parameters
-    labels = ship.fit_predict(power=2, partitioningMethod="Elbow")
+    labels = ship.fit_predict(hierarchy=2, partitioningMethod="Elbow")
 
 For more detailed usage and examples, please refer to the module-specific documentation pages.
 

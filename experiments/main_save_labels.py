@@ -127,11 +127,11 @@ for dataset in datasets:
 
             np.save(f"{savepath}{dataset.name}##{treeType}_build##{run}" + "##time.npy", ship.tree_construction_runtime[0])
 
-            for power in HIERARCHIES:
+            for hierarchy in HIERARCHIES:
                 for partitioningMethod in PARTITIONING_METHODS:
-                    labels = ship.fit_predict(power=power, partitioningMethod=partitioningMethod)
+                    labels = ship.fit_predict(hierarchy=hierarchy, partitioningMethod=partitioningMethod)
 
-                    savestring = f"{savepath}{dataset.name}##{treeType}_{power}_{partitioningMethod}##{run}"
+                    savestring = f"{savepath}{dataset.name}##{treeType}_{hierarchy}_{partitioningMethod}##{run}"
                     os.makedirs(os.path.dirname(savestring), exist_ok=True)
                     labels = labels[inverse_shuffle_data_index]
                     np.save(savestring + ".npy", labels)

@@ -21,7 +21,7 @@ The SHiP framework is designed with modularity and extensibility in mind. Its st
 
 - **Tree Partitioning**
 
-  Provides various objective functions and algorithms to extract flat partitions from hierarchical trees — such as Elbow, K, or Power-based partitioning strategies.
+  Provides various objective functions and algorithms to extract flat partitions from hierarchical trees — such as Elbow Method, Silhouette or for a specific K.
 
 - **Helper Methods**
 

@@ -10,7 +10,7 @@ auto measure_runtime(F&& f, Args&&... args) {
     auto result = std::invoke(std::forward<F>(f), std::forward<Args>(args)...);
     auto stop = std::chrono::high_resolution_clock::now();
     long long elapsed = std::chrono::duration_cast<Rep>(stop - start).count();
-    return std::make_pair(result, elapsed);
+    return std::make_pair(std::move(result), elapsed);
 }
 
 template <typename Rep = std::chrono::microseconds, typename F, typename... Args>
