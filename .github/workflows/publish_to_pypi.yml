@@ -204,17 +204,17 @@ jobs:
           name: built-wheels-ubuntu-latest
           path: dist/
 
-      - name: "[TestPyPI] Download all built windows-latest wheels"
-        uses: actions/download-artifact@v4
-        with:
-          name: built-wheels-windows-latest
-          path: dist/
+      # - name: "[TestPyPI] Download all built windows-latest wheels"
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: built-wheels-windows-latest
+      #     path: dist/
 
-      - name: "[TestPyPI] Download all built macos-latest wheels"
-        uses: actions/download-artifact@v4
-        with:
-          name: built-wheels-macos-latest
-          path: dist/
+      # - name: "[TestPyPI] Download all built macos-latest wheels"
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: built-wheels-macos-latest
+      #     path: dist/
 
       - name: "[TestPyPI] Publish to TestPyPI"
         uses: pypa/gh-action-pypi-publish@release/v1
@@ -251,17 +251,17 @@ jobs:
           name: built-wheels-ubuntu-latest
           path: dist/
 
-      - name: "[PyPI] Download built windows-latest wheels"
-        uses: actions/download-artifact@v4
-        with:
-          name: built-wheels-windows-latest
-          path: dist/
+      # - name: "[PyPI] Download built windows-latest wheels"
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: built-wheels-windows-latest
+      #     path: dist/
 
-      - name: "[PyPI] Download built macos-latest wheels"
-        uses: actions/download-artifact@v4
-        with:
-          name: built-wheels-macos-latest
-          path: dist/
+      # - name: "[PyPI] Download built macos-latest wheels"
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: built-wheels-macos-latest
+      #     path: dist/
 
       - name: "[PyPI] Publish to PyPI"
         uses: pypa/gh-action-pypi-publish@release/v1
