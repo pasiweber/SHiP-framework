@@ -1,13 +1,13 @@
 [project]
 name = "SHiP-framework"
-version = "0.1.1-beta"
+version = "0.1.2-beta"
 description = "Center-based hierarchical clustering framework using 3 steps: compute a Similarity, build an Hierarchy, and lastly extract a clustering using a Partitioning method."
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "BSD-3-Clause License" }
 authors = [
-    { name = "##42h5##" },
-    { name = "##42h5##", email = "42h@26.de" },
+    { name = "Pascal Weber" },
+    { name = "Pascal Weber", email = "pasi.weber@gmail.com" },
 ]
 keywords = [
     "clustering",
@@ -42,10 +42,10 @@ classifiers = [
 
 
 [project.urls]
-Homepage = "https://github.com/##42h7##/SHiP-framework"
-Documentation = "https://readthedocs.org"
-Repository = "https://github.com/##42h7##/SHiP-framework"
-Issues = "https://github.com/##42h7##/SHiP-framework/issues"
+Homepage = "https://github.com/pasiweber/SHiP-framework"
+Documentation = "https://SHiP-framework.readthedocs.io/en/"
+Repository = "https://github.com/pasiweber/SHiP-framework"
+Issues = "https://github.com/pasiweber/SHiP-framework/issues"
 
 
 [build-system]

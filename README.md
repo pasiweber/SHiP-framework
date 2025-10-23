@@ -1,16 +1,16 @@
 # Similarity-Hierarchical-Partitioning (SHiP) Clustering Framework
 [![PyPI version](https://badge.fury.io/py/SHiP-framework.svg)](https://pypi.org/project/SHiP-framework/)
-[![Tests](https://github.com/##42h7##/SHiP-framework/actions/workflows/publish_to_pypi.yml/badge.svg)](https://github.com/##42h7##/SHiP-framework/actions/workflows/publish_to_pypi.yml)
+[![Tests](https://github.com/pasiweber/SHiP-framework/actions/workflows/publish_to_pypi.yml/badge.svg)](https://github.com/pasiweber/SHiP-framework/actions/workflows/publish_to_pypi.yml)
 [![Docs](https://readthedocs.org/projects/SHiP-framework/badge/?version=latest)](https://SHiP-framework.readthedocs.io/en/)
 
-This repository is the official implementation of the Similarity-Hierarchical-Partitioning (SHiP) clustering framework proposed in [Ultrametric Cluster Hierarchies: I Want `em All!](https://github.com/##42h7##/SHiP-framework/) This framework provides a comprehensive approach to clustering by leveraging similarity trees, $(k,z)$-hierarchies, and various partitioning objective functions. 
+This repository is the official implementation of the Similarity-Hierarchical-Partitioning (SHiP) clustering framework proposed in [Ultrametric Cluster Hierarchies: I Want `em All!](https://github.com/pasiweber/SHiP-framework/) This framework provides a comprehensive approach to clustering by leveraging similarity trees, $(k,z)$-hierarchies, and various partitioning objective functions. 
 
 The whole project is implemented in C++ and Python bindings enable the usage within Python.
 
 
 ## Overview
 The SHiP framework operates in three main stages:
-[![SHiP framework overview](https://raw.githubusercontent.com/##42h7##/SHiP-framework/main/docs/ClusterFrameworkOverview.png)](https://github.com/##42h7##/SHiP-framework/)
+[![SHiP framework overview](https://raw.githubusercontent.com/pasiweber/SHiP-framework/main/docs/ClusterFrameworkOverview.png)](https://github.com/pasiweber/SHiP-framework/)
 
 1. **Similarity Tree Construction:** A similarity tree is built for the given dataset. This tree represents the relationships and proximities between data points. Note that the default constructed tree corresponds to the $k$-center hierarchy (Section 3 in the paper).
 2. **$(k,z)$-Hierarchy Construction:** Using the similarity tree, a $(k,z)$-hierarchy can be constructed. These hierarchies correlate to common center based clustering methods, as e.g., $k$-median or $k$-means (Section 4).
@@ -93,7 +93,7 @@ Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Bui
 
 ### Development Version
 The current development version can be installed directly from git by executing:<br/>
-`sudo pip install git+https://github.com/##42h7##/SHiP-framework.git`
+`sudo pip install git+https://github.com/pasiweber/SHiP-framework.git`
 
 Alternatively, clone the repository, go to the root directory and execute:<br/>
 `pip install .`
@@ -146,7 +146,7 @@ Dataset | DC-0-Stab. | DC-1-MoE | DC-2-Elb. | CT-0-Stab. | CT-1-MoE | CT-2-Elb. 
 
 
 ## License
-The project is licensed under the BSD 3-Clause License (see [LICENSE.txt](https://github.com/##42h7##/SHiP-framework/blob/main/LICENSE.txt)).
+The project is licensed under the BSD 3-Clause License (see [LICENSE.txt](https://github.com/pasiweber/SHiP-framework/blob/main/LICENSE.txt)).
 
 
 ## References
