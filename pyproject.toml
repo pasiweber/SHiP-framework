@@ -1,6 +1,6 @@
 [project]
 name = "SHiP-framework"
-version = "0.1.2-beta"
+version = "0.1.2"
 description = "Center-based hierarchical clustering framework using 3 steps: compute a Similarity, build an Hierarchy, and lastly extract a clustering using a Partitioning method."
 readme = "README.md"
 requires-python = ">=3.9"
