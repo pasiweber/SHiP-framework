@@ -130,9 +130,11 @@ void Tree::assign_nodes_their_k_values() {
 std::vector<std::vector<double>> Tree::get_distance_matrix() {
     unsigned long long n = this->root->size;
     std::vector<std::vector<double>> distance_matrix(n, std::vector<double>(n));
+    auto& nodes = this->sorted_nodes;
 
 #pragma omp parallel for schedule(dynamic)
-    for (std::shared_ptr<Node> node : this->sorted_nodes) {
+    for (int idx = 0; idx < static_cast<int>(nodes.size()); ++idx) {
+        auto node = nodes[idx];
         for (size_t i = 0; i < node->children.size(); ++i) {
             for (size_t j = i + 1; j < node->children.size(); ++j) {
                 for (long long left = node->children[i]->low; left <= node->children[i]->high; ++left) {

@@ -84,6 +84,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-wheels-${{ hashFiles('**/*.hpp', '**/*.cpp') }}
 
+      # Install libomp on macOS
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew update
+          brew install libomp
+
       # Initialize environment
       - name: "[Init] Set up Python"
         if: steps.cache-wheel.outputs.cache-hit != 'true'

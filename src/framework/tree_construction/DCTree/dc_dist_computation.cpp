@@ -52,14 +52,14 @@ std::tuple<arma::mat, arma::vec> compute_mutual_reachability_dists(const arma::m
     unsigned long long n = data.n_cols;
     arma::mat dists(n, n, arma::fill::none);
 #pragma omp parallel for schedule(static)
-    for (unsigned long long i = 0; i < n; ++i) {
+    for (long long i = 0; i < n; ++i) {
         dists(i, i) = 0.0;
     }
 
     // Stage 1: Parallel fill upper triangle (j > i)
 #pragma omp parallel for schedule(guided)
-    for (unsigned long long i = 0; i < n; ++i) {
-        for (unsigned long long j = i + 1; j < n; ++j) {
+    for (long long i = 0; i < n; ++i) {
+        for (long long j = i + 1; j < n; ++j) {
             double dist = arma::norm(data.col(i) - data.col(j), 2);
             dists(i, j) = dist;
         }
@@ -68,14 +68,14 @@ std::tuple<arma::mat, arma::vec> compute_mutual_reachability_dists(const arma::m
     // Stage 2: Compute core distances
     arma::vec core_dists(n);
 #pragma omp parallel for schedule(static)
-    for (unsigned long long i = 0; i < n; ++i) {
+    for (long long i = 0; i < n; ++i) {
         std::vector<double> knn_dists;
         knn_dists.reserve(n - 1);
 
-        for (unsigned long long j = 0; j < i; ++j) {
+        for (long long j = 0; j < i; ++j) {
             knn_dists.push_back(dists(j, i));
         }
-        for (unsigned long long j = i + 1; j < n; ++j) {
+        for (long long j = i + 1; j < n; ++j) {
             knn_dists.push_back(dists(i, j));
         }
 
@@ -85,23 +85,23 @@ std::tuple<arma::mat, arma::vec> compute_mutual_reachability_dists(const arma::m
 
     // Stage 3: Parallel fill lower triangle (j < i)
 #pragma omp parallel for schedule(guided)
-    for (unsigned long long i = 0; i < n; ++i) {
-        for (unsigned long long j = i + 1; j < n; ++j) {
+    for (long long i = 0; i < n; ++i) {
+        for (long long j = i + 1; j < n; ++j) {
             dists(j, i) = dists(i, j);
         }
     }
 
     // Stage 4: Compute mutual-reachability distances
 #pragma omp parallel for schedule(static)
-    for (unsigned long long j = 0; j < n; ++j) {
+    for (long long j = 0; j < n; ++j) {
         dists.col(j) = arma::max(dists.col(j), core_dists);
     }
 #pragma omp parallel for schedule(static)
-    for (unsigned long long i = 0; i < n; ++i) {
+    for (long long i = 0; i < n; ++i) {
         dists.row(i) = arma::max(dists.row(i), core_dists.t());
     }
 #pragma omp parallel for schedule(static)
-    for (unsigned long long i = 0; i < n; ++i) {
+    for (long long i = 0; i < n; ++i) {
         dists(i, i) = 0.0;
     }
     return {dists, core_dists};
