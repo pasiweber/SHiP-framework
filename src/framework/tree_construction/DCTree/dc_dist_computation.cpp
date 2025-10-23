@@ -49,7 +49,7 @@ bool compareEdgesByCost(const MSTEdge e1, const MSTEdge e2) {
 std::tuple<arma::mat, arma::vec> compute_mutual_reachability_dists(const arma::mat &data, unsigned long long k) {
     if (k <= 1) k = 2;
 
-    unsigned long long n = data.n_cols;
+    long long n = data.n_cols;
     arma::mat dists(n, n, arma::fill::none);
 #pragma omp parallel for schedule(static)
     for (long long i = 0; i < n; ++i) {
