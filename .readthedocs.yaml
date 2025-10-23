@@ -19,6 +19,4 @@ build:
     python: "3.12"
   jobs:
     pre_build:
-      - apt-get update -y
-      - apt-get install -y doxygen
       - doxygen Doxyfile
