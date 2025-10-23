@@ -1,4 +1,4 @@
-name: Build wheels for the SHiP framework, then test and publish them to PyPI and TestPyPI
+name: Build SHiP-framework
 
 on:
   push:
