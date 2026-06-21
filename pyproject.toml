@@ -77,7 +77,6 @@ settings = [
     "compiler.cppstd=20",
 ]
 output-folder = "build" # where to run CMake and where binaries go
-generator = "Ninja"
 
 
 [tool.cibuildwheel]
@@ -106,6 +105,3 @@ CMAKE_ARGS = "-DOpenMP_CXX_FLAGS='-Xpreprocessor -fopenmp -I$(brew --prefix libo
 
 [tool.cibuildwheel.windows]
 archs = "AMD64" # 'AMD64' is the cibuildwheel keyword for Windows x86_64
-
-[tool.cibuildwheel.windows.environment]
-CMAKE_GENERATOR = "Ninja"
