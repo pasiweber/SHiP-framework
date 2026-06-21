@@ -22,8 +22,7 @@ enum class UltrametricTreeType {
     LoadTree,
 
     /// Density-Connected Tree (DCTree): a tree structure based on the density-connected distance (dc-distance) 
-    /// \rst :ref:`[1]<dc-dist>`
-\endrst.
+    /// \rst :ref:`[1]<dc-dist>` \endrst.
     ///
     /// **Parameters:**
     /// - `min_points` (default: `5`): Compute *core_dist* by using the distance to the min_points' nearest neighbor of a point.
@@ -31,77 +30,67 @@ enum class UltrametricTreeType {
     DCTree,
 
     /// Hierarchically Separated Tree (HST): uses recursive metric partitions to ensure separation properties 
-    /// \rst :ref:`[2]<hst>`
-\endrst.
+    /// \rst :ref:`[2]<hst>` \endrst.
     ///
     /// **Parameters:**
     /// - `seed` (default: `-1`): Seed for building the HST. `-1` means random.
     HST,
 
     /// Cover Tree: a fast, scalable data structure for nearest neighbor queries and clustering 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     CoverTree,
 
     /// KD-Tree: partitions the data space along axis-aligned hyperplanes for efficient spatial queries 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     ///
     /// **Parameters:**
     /// - `max_leaf_size` (default: `5`): Maximum leaf size for this tree (how many leaves can be put in the lowest node).
     KDTree,
 
     /// Variant of KD-Tree using mean splits instead of medians to construct the tree 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     ///
     /// **Parameters:**
     /// - `max_leaf_size` (default: `5`): Maximum leaf size for this tree (how many leaves can be put in the lowest node).
     MeanSplitKDTree,
 
     /// Ball Tree: recursively partitions points into hyperspheres (balls), suitable for non-axis-aligned clusters 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     ///
     /// **Parameters:**
     /// - `max_leaf_size` (default: `5`): Maximum leaf size for this tree (how many leaves can be put in the lowest node).
     BallTree,
 
     /// Variant of Ball Tree that uses mean splits instead of radius-based ones 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     ///
     /// **Parameters:**
     /// - `max_leaf_size` (default: `5`): Maximum leaf size for this tree (how many leaves can be put in the lowest node).
     MeanSplitBallTree,
 
     /// Random Projection Tree (RP Tree): recursively splits data using random hyperplanes 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     ///
     /// **Parameters:**
     /// - `max_leaf_size` (default: `5`): Maximum leaf size for this tree (how many leaves can be put in the lowest node).
     RPTree,
 
     /// Maximum-Spread RP Tree: a variant of RP Tree using splits that maximize spread or variance 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     ///
     /// **Parameters:**
     /// - `max_leaf_size` (default: `5`): Maximum leaf size for this tree (how many leaves can be put in the lowest node).
     MaxRPTree,
 
     /// Upper Bound Tree (UBTree): a tree structure emphasizing similarity upper bounds for clustering 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     ///
     /// **Parameters:**
     /// - `max_leaf_size` (default: `5`): Maximum leaf size for this tree (how many leaves can be put in the lowest node).
     UBTree,
 
     /// R-Tree: a dynamic index structure for spatial access methods using bounding rectangles 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     ///
     /// **Parameters:**
     /// - `min_leaf_size` (default: `1`): Minimum leaf size for this tree (how many leaves can be put in the lowest node).
@@ -109,8 +98,7 @@ enum class UltrametricTreeType {
     RTree,
 
     /// R*-Tree: a refined R-Tree with better heuristics for node splitting and reinsertions 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     ///
     /// **Parameters:**
     /// - `min_leaf_size` (default: `1`): Minimum leaf size for this tree (how many leaves can be put in the lowest node).
@@ -118,8 +106,7 @@ enum class UltrametricTreeType {
     RStarTree,
 
     /// X-Tree: an extended R-Tree variant that handles high-dimensional data by avoiding overlap 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     ///
     /// **Parameters:**
     /// - `min_leaf_size` (default: `1`): Minimum leaf size for this tree (how many leaves can be put in the lowest node).
@@ -127,8 +114,7 @@ enum class UltrametricTreeType {
     XTree,
 
     /// Hilbert R-Tree: an R-Tree optimized using space-filling Hilbert curves to improve locality 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     ///
     /// **Parameters:**
     /// - `min_leaf_size` (default: `1`): Minimum leaf size for this tree (how many leaves can be put in the lowest node).
@@ -136,8 +122,7 @@ enum class UltrametricTreeType {
     HilbertRTree,
 
     /// R+-Tree: avoids overlapping rectangles by splitting objects across multiple nodes 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     ///
     /// **Parameters:**
     /// - `min_leaf_size` (default: `1`): Minimum leaf size for this tree (how many leaves can be put in the lowest node).
@@ -145,8 +130,7 @@ enum class UltrametricTreeType {
     RPlusTree,
 
     /// R++-Tree: a further improvement over R+-Tree focusing on reduced overlap and better packing 
-    /// \rst :ref:`[3]<mlpack>`
-\endrst.
+    /// \rst :ref:`[3]<mlpack>` \endrst.
     ///
     /// **Parameters:**
     /// - `min_leaf_size` (default: `1`): Minimum leaf size for this tree (how many leaves can be put in the lowest node).

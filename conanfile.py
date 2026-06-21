@@ -5,13 +5,13 @@ class SHiP_Framework(ConanFile):
     name = "SHiP"
     settings = "os", "compiler", "build_type", "arch"
     requires = (
-        "mlpack/4.3.0",
-        "armadillo/12.6.4",
-        "hdf5/1.14.4.3",
-        "pybind11/2.13.5",
+        "mlpack/[>=4.3 <5]",
+        "armadillo/[>=12.0 <13]",
+        "hdf5/[>=1.14 <2]",
+        "pybind11/[>=2.11 <3]",
         "cnpy/cci.20180601",
-        "fmt/11.1.4",
-        "simdjson/3.12.3",
+        "fmt/[>=11 <12]",
+        "simdjson/[>=3.10 <4]",
         # "llvm-openmp/18.1.8",
         ## Math libraries ##
         # "onetbb/2022.0.0",

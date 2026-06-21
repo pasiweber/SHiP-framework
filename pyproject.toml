@@ -49,7 +49,7 @@ Issues = "https://github.com/pasiweber/SHiP-framework/issues"
 
 
 [build-system]
-requires = ["scikit-build-core-conan"]
+requires = ["scikit-build-core-conan==0.8.0"]
 build-backend = "scikit_build_core_conan.build"
 
 
@@ -67,7 +67,7 @@ cmake.source-dir = "."
 
 [tool.scikit-build-core-conan]
 path = "."
-build = ["Release"]
+build = "missing" # build missing packages from source
 cmake.args = [
     "-DCMAKE_C_FLAGS=-Wno-error=incompatible-pointer-types",
     "-DCMAKE_CXX_FLAGS=-Wno-error=incompatible-pointer-types",
