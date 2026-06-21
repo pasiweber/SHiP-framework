@@ -72,11 +72,21 @@ hierarchies, and partitioning functions.
     labels = ship.fit_predict(hierarchy=2, partitioningMethod="Elbow")
     ```
 
+  - Or to get clustering with exact $k$ clusters:
+    ```python
+    from SHiP import SHiP
+
+    ship = SHiP(data=data_points, treeType="DCTree")
+    # Extract the clustering from the $k$-median hierarchy and get `k` clusters
+    ship.k = k # Set k here
+    labels = ship.fit_predict(hierarchy=2, partitioningMethod="K")
+    ```
+
 
 ## Installation
 ### Stable Version
 The current stable version can be installed by the following command:<br/>
-`pip install SHiP-framework` (coming soon)
+`pip install SHiP-framework`
 
 Note that a gcc compiler is required for installation.
 Therefore, in case of an installation error, make sure that:

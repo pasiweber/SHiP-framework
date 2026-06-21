@@ -42,25 +42,13 @@ myst_enable_extensions = [
     "amsmath",     # optional, enables AMS math environments
     "dollarmath",  # enables $...$ and $$...$$
 ]
+myst_heading_anchors = 3
 
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "furo"  # "pydata_sphinx_theme"
 html_theme_options = {
-    "collapse_navigation": False,  # keeps navigation expanded by default
-    "sticky_navigation": True,     # sidebar sticks on scroll
-    "navigation_depth": 7,         # how deep ToC shows
+    "source_repository": "https://github.com/pasiweber/SHiP-framework/",
+    "source_branch": "main",
+    "source_directory": "docs/source/",
 }
 html_static_path = ["_static"]
-
-
-# conf.py
-def fix_verbatim_breaks(app, exception):
-    if not exception:
-        for f in app.outdir.rglob("*.html"):
-            html = f.read_text()
-            f.write_text(html.replace('. </p>\n<p><span> <a class="reference internal" ', '<span> <a class="reference internal" '))
-
-
-def setup(app):
-    app.add_css_file("custom.css")
-    app.connect("build-finished", fix_verbatim_breaks)

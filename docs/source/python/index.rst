@@ -51,6 +51,7 @@ Modules
 -------
 .. toctree::
    :maxdepth: 1
+   :caption: Python Documentation
 
    Module#SHiP
    Submodule#ultrametric_tree

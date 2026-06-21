@@ -103,7 +103,7 @@ target_link_libraries(${PROJECT_NAME}_library
     cnpy::cnpy
     fmt::fmt
     simdjson::simdjson
-    # OpenMP::OpenMP
+    OpenMP::OpenMP_CXX
     ## Math libraries ##
     # Eigen3::Eigen
     # blaze::blaze

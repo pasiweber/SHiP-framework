@@ -1,6 +1,6 @@
 /**
-    \Author: Trasier
-    \Date:    2019/06/18
+    Author: Trasier
+    Date:   2019/06/18
 **/
 
 #pragma once

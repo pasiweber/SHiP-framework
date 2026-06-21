@@ -31,9 +31,12 @@ The SHiP framework is designed with modularity and extensibility in mind. Its st
 Use the navigation on the left to explore each component in detail. Each section provides both inline documentation (from Doxygen) and structural overviews to help you understand the responsibilities and interfaces of the different parts of the codebase.
 
 
+C++ Modules
+-----------
+
 .. toctree::
    :maxdepth: 1
-   :caption: Source Files
+   :caption: C++ Source File Documentation:
 
    framework/SHiP
    framework/tree_construction

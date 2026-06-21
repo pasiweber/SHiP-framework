@@ -6,7 +6,13 @@
 #include <vector>
 
 
-/// \brief Available methods for partitioning a hierarchy into flat clusters.
+/*!
+ * \brief Available methods for partitioning a hierarchy into flat clusters.
+ * \defgroup PartitioningMethods
+ * \ingroup PartitioningMethods
+ *
+ * Enum class `PartitioningMethod` representing supported partitioning methods.
+ */
 enum class PartitioningMethod {
     /// Partition into a fixed number of clusters $k$.
     ///

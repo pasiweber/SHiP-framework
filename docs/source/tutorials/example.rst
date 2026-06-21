@@ -13,6 +13,7 @@ Example
 
    ship.hierarchy = 0
    ship.partitioningMethod = "K"
+   ship.k = 5
    labels = ship.fit_predict()
 
    # or in one line
