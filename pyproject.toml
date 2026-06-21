@@ -96,6 +96,11 @@ CXXFLAGS = "-Wno-error=incompatible-pointer-types"
 
 
 [tool.cibuildwheel.macos]
+before-build = "brew install libomp || true"
+
+[tool.cibuildwheel.macos.environment]
+# Tell CMake where Apple Clang can find libomp
+CMAKE_ARGS = "-DOpenMP_CXX_FLAGS='-Xpreprocessor -fopenmp -I$(brew --prefix libomp)/include' -DOpenMP_CXX_LIB_NAMES=omp -DOpenMP_omp_LIBRARY=$(brew --prefix libomp)/lib/libomp.dylib -DOpenMP_C_FLAGS='-Xpreprocessor -fopenmp -I$(brew --prefix libomp)/include' -DOpenMP_C_LIB_NAMES=omp"
 
 
 [tool.cibuildwheel.windows]

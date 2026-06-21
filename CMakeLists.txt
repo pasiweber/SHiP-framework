@@ -78,6 +78,23 @@ add_library(${PROJECT_NAME}_library STATIC
     src/framework/partitioning/elbow_methods.cpp
 )
 
+# Apple Clang doesn't bundle OpenMP — help CMake find Homebrew's libomp
+if(APPLE)
+    execute_process(
+        COMMAND brew --prefix libomp
+        OUTPUT_VARIABLE HOMEBREW_LIBOMP_PREFIX
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+    )
+    if(HOMEBREW_LIBOMP_PREFIX)
+        set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -I${HOMEBREW_LIBOMP_PREFIX}/include")
+        set(OpenMP_CXX_LIB_NAMES "omp")
+        set(OpenMP_omp_LIBRARY "${HOMEBREW_LIBOMP_PREFIX}/lib/libomp.dylib")
+        set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp -I${HOMEBREW_LIBOMP_PREFIX}/include")
+        set(OpenMP_C_LIB_NAMES "omp")
+    endif()
+endif()
+
 # Find all the neccessary packages
 find_package(mlpack REQUIRED)
 find_package(Armadillo REQUIRED)
