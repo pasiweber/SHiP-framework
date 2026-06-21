@@ -218,3 +218,24 @@ else()
     # pip will automatically find the correct Python path and install it. Recommended!
     install(TARGETS ${PROJECT_NAME} DESTINATION .)
 endif()
+
+install(CODE "
+    execute_process(
+        COMMAND ${Python_EXECUTABLE} -m pybind11_stubgen SHiP
+            --numpy-array-use-type-var
+            --enum-class-locations \"UltrametricTreeType:SHiP.ultrametric_tree\"
+            --enum-class-locations \"PartitioningMethod:SHiP.partitioning\"
+            -o \"${CMAKE_SOURCE_DIR}\"
+        WORKING_DIRECTORY \"${CMAKE_INSTALL_PREFIX}\"
+        RESULT_VARIABLE stubgen_result
+    )
+    if(NOT stubgen_result EQUAL 0)
+        message(FATAL_ERROR \"pybind11-stubgen failed\")
+    endif()
+
+    # Copy generated stubs into the install prefix right after generation
+    file(GLOB stub_files \"${CMAKE_SOURCE_DIR}/SHiP/*.pyi\")
+    foreach(stub \${stub_files})
+        file(COPY \${stub} DESTINATION \"${CMAKE_INSTALL_PREFIX}/SHiP\")
+    endforeach()
+")

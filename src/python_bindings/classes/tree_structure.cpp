@@ -32,7 +32,11 @@ inline void bind_Node(py::module_ &m) {
     For leaf nodes, this list is empty. For internal nodes, it contains two or more children.
     )pbdoc")
 
-        .def_readonly("parent", &Node::parent,
+       .def_property_readonly("parent", [](const Node& self) -> py::object {
+            auto ptr = self.parent.lock();   // weak_ptr → shared_ptr
+            if (ptr) return py::cast(ptr);
+            return py::none();
+        },
                       R"pbdoc(
     Parent node in the tree hierarchy.
 

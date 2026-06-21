@@ -76,6 +76,11 @@ inline void bind_UltrametricTreeTypes(py::module_ &m) {
     }));
     py::implicitly_convertible<std::string, UltrametricTreeType>();
 
+    ultrametricTreeTypes.def("__repr__", [](UltrametricTreeType v) {
+        return std::string("UltrametricTreeType.") + 
+               std::string(py::str(py::cast(v).attr("name")));
+    });
+
     // Provide a list of available UltrametricTreeTypes
     ultrametric_tree_submodule.attr("AVAILABLE_ULTRAMETRIC_TREE_TYPES") = py::cast(get_available_ultrametric_tree_types());
     ultrametric_tree_submodule.attr("AVAILABLE_ULTRAMETRIC_TREE_TYPES_AS_STRINGS") = py::cast(get_available_ultrametric_tree_types_as_strings());
@@ -161,6 +166,11 @@ inline void bind_PartitioningMethods(py::module_ &m) {
         return string_to_partitioning_method(name);
     }));
     py::implicitly_convertible<std::string, PartitioningMethod>();
+
+    partitioningMethods.def("__repr__", [](PartitioningMethod v) {
+        return std::string("PartitioningMethod.") + 
+               std::string(py::str(py::cast(v).attr("name")));
+    });
 
     // Provide a list of available PartitioningMethods
     partitioning_submodule.attr("AVAILABLE_PARTITIONING_METHODS") = py::cast(get_available_partitioning_methods());
