@@ -1,6 +1,6 @@
 [project]
 name = "SHiP-framework"
-version = "0.1.2"
+version = "0.1.3"
 description = "Center-based hierarchical clustering framework using 3 steps: compute a Similarity, build an Hierarchy, and lastly extract a clustering using a Partitioning method."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -67,7 +67,7 @@ cmake.source-dir = "."
 
 [tool.scikit-build-core-conan]
 path = "."
-build = "missing" # build missing packages from source
+build = ["Release"]
 cmake.args = [
     "-DCMAKE_C_FLAGS=-Wno-error=incompatible-pointer-types",
     "-DCMAKE_CXX_FLAGS=-Wno-error=incompatible-pointer-types",
