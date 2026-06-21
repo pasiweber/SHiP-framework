@@ -1,9 +1,13 @@
+# Framework
+ship-framework
+
+# Docs Utilities
 sphinx
 sphinx-autodoc-typehints
 sphinx-math-dollar
 myst-parser
 breathe
-### Themes
+# - Themes
 # sphinx-rtd-theme
 furo
 # pydata_sphinx_theme
