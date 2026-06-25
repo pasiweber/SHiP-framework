@@ -207,7 +207,7 @@ jobs:
       - name: "[TestPyPI] Download all built windows-latest wheels"
         uses: actions/download-artifact@v4
         with:
-          name: built-wheels-windows-latest
+          name: built-wheels-windows-2022
           path: dist/
 
       # - name: "[TestPyPI] Download all built macos-latest wheels"
@@ -254,7 +254,7 @@ jobs:
       - name: "[PyPI] Download built windows-latest wheels"
         uses: actions/download-artifact@v4
         with:
-          name: built-wheels-windows-latest
+          name: built-wheels-windows-2022
           path: dist/
 
       # - name: "[PyPI] Download built macos-latest wheels"
