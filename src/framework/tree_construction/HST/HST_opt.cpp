@@ -107,9 +107,9 @@ void randomization(long long seed) {
     // set seed
     std::mt19937 rng;
     if (seed != -1) {
-        rng = std::mt19937(seed);
+        rng = std::mt19937(static_cast<unsigned int>(seed));
     } else {
-        rng = std::mt19937(time(0));
+        rng = std::mt19937(static_cast<unsigned int>(time(0)));
     }
 
     // generate the permutation pi

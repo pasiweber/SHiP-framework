@@ -24,7 +24,7 @@ long long getMeanK(std::vector<long long>& vec) {
 
 
 // Extract labels given the `PartitioningMethod`
-std::vector<long long> SHiP::partitioning() {
+std::tuple<std::vector<long long>, std::vector<long long>> SHiP::partitioning() {
     switch (this->partitioning_method) {
         case PartitioningMethod::K: {
             long long k = get_config_value_in_range<long long>(this->config, "k", 2, 1, this->data.size(), true);
@@ -86,7 +86,7 @@ std::vector<long long> SHiP::partitioning() {
 
             std::vector<long long> vec;
             for (long long z = elbow_start_z; z <= elbow_end_z; z++) {
-                vec.push_back(this->get_tree(z)->get_elbow_k());
+                vec.push_back(this->get_tree(static_cast<double>(z))->get_elbow_k());
             }
 
             long long median = getMedianK(vec);
@@ -104,7 +104,7 @@ std::vector<long long> SHiP::partitioning() {
 
             std::vector<long long> vec;
             for (long long z = elbow_start_z; z <= elbow_end_z; z++) {
-                vec.push_back(this->get_tree(z)->get_elbow_k());
+                vec.push_back(this->get_tree(static_cast<double>(z))->get_elbow_k());
             }
 
             long long mean = getMeanK(vec);

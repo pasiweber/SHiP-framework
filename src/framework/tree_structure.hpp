@@ -115,7 +115,7 @@ class Tree {
 public:
     std::shared_ptr<Node> root;
     UltrametricTreeType tree_type;
-    long long hierarchy;
+    double hierarchy;
     std::unordered_map<std::string, std::string> config;
 
     // Indexes for smart access
@@ -135,13 +135,18 @@ public:
         This ensures it is easy to get out k solutions efficiently afterwards.
         Internal nodes end up having id of the center / cluster that its leaves will be part of.
     */
-    Tree(std::shared_ptr<Node> root, std::vector<std::vector<double>>& data, UltrametricTreeType tree_type, long long hierarchy, const std::unordered_map<std::string, std::string>& config = {});
+    Tree(std::shared_ptr<Node> root, std::vector<std::vector<double>>& data, UltrametricTreeType tree_type, double hierarchy, const std::unordered_map<std::string, std::string>& config = {});
 
     double cost_function(double value) {
-        if (this->hierarchy <= 1) {
-            return value;
+        if (this->hierarchy < 0.0) {
+            LOG_ERROR << "Hierarchy can't be < 0 for cost function.";
+            throw std::runtime_error("Hierarchy can't be < 0 for cost function");
         } else {
-            return std::pow(value, this->hierarchy);
+            double result = std::pow(value, this->hierarchy);
+            if (!std::isfinite(result)) {
+                throw std::overflow_error("Cost function d(x,y)^z with z=hierarchy overflowed. Use smaller hierarchy!");
+            }
+            return result;
         }
     }
 
@@ -154,18 +159,18 @@ public:
         For get_k_solution we always start from the top of the tree and do it top down instead of from a potential previous solution.
         It works by taking the nodes above the cut of any nodes with annotated k values > k.
     */
-    std::vector<long long> kcenter_cut(long long k);
+    std::tuple<std::vector<long long>, std::vector<long long>> kcenter_cut(long long k);
 
-    std::vector<long long> kcenter_elbow_cut(bool triangle = true);
-    std::vector<long long> threshold_elbow_cut();
-    std::vector<long long> threshold_cut(long long k);
+    std::tuple<std::vector<long long>, std::vector<long long>> kcenter_elbow_cut(bool triangle = true);
+    std::tuple<std::vector<long long>, std::vector<long long>> threshold_elbow_cut();
+    std::tuple<std::vector<long long>, std::vector<long long>> threshold_cut(long long k);
 
-    std::vector<long long> stability_cut(unsigned long long mcs);
-    std::vector<long long> normalized_stability_cut(unsigned long long mcs);
+    std::tuple<std::vector<long long>, std::vector<long long>> stability_cut(unsigned long long mcs);
+    std::tuple<std::vector<long long>, std::vector<long long>> normalized_stability_cut(unsigned long long mcs);
 
-    std::vector<long long> threshold_q_coverage(long long k, unsigned long long minPts, bool prune_stem = false, bool elbow = false, bool use_full_tree_elbow = false);
+    std::tuple<std::vector<long long>, std::vector<long long>> threshold_q_coverage(long long k, unsigned long long minPts, bool prune_stem = false, bool elbow = false, bool use_full_tree_elbow = false);
 
-    std::vector<long long> get_lca_prune_solution(bool triangle = true);
+    std::tuple<std::vector<long long>, std::vector<long long>> get_lca_prune_solution(bool triangle = true);
 
 
 private:
@@ -254,7 +259,7 @@ private:
         Updates the current internal solution, which is a at most 2 deep, flat, tree structure with "fake" nodes pointing to the real nodes of the k solution.
         Can take as input either the full tree or a lower k solution.
     */
-    std::vector<long long> k_solution(long long k, std::shared_ptr<Node> curr_solution);
+    std::tuple<std::vector<long long>, std::vector<long long>> k_solution(long long k, std::shared_ptr<Node> curr_solution);
     /*
         The generated tree structure will never be more than two deep.
         It checks for edges crossing between lower and higher k than the search k and returns the nodes above the cut.
@@ -265,13 +270,13 @@ private:
     /*
         Helper function that labels all nodes in a tree with given label using quick pointers.
     */
-    void label_tree(std::vector<long long>& res, std::shared_ptr<Node> tree, long long label);
+    void label_tree(std::vector<long long>& labels, std::shared_ptr<Node> tree, long long label);
 
     /*
         This function takes the solution container (which is a "pseudo" node) and loops through its children of real solution nodes
         to output the cluster labels.
     */
-    void extract_labels(std::vector<long long>& res, std::shared_ptr<Node> solution);
+    void extract_labels(std::vector<long long>& labels, std::vector<long long>& centers, std::shared_ptr<Node> solution);
 
     // ########################## THRESHOLD CUTS ##############################
 
@@ -279,9 +284,9 @@ private:
         This labels based on the highest node that is a cluster. The bottom_up_cluster algorithm labels all clusters that win as true bottom up.
         *THIS CAN ALSO BE USED WHEN NO IS_MERGER IS PRESENT, i.e. for HDBSCAN*
     */
-    void label_clusters_helper_merge(std::shared_ptr<Node> tree, std::vector<long long>& labels, long long k);
+    void label_clusters_helper_merge(std::shared_ptr<Node> tree, std::vector<long long>& labels,  std::vector<long long>& centers, long long k);
 
-    std::vector<long long> label_clusters_merge(std::shared_ptr<Node> tree, long long k = -1);
+    std::tuple<std::vector<long long>, std::vector<long long>> label_clusters_merge(std::shared_ptr<Node> tree, long long k = -1);
     /*
         Main threshold function.
         To make it perform kcenter cut even on the relaxed ultrametric, simply don't set is_cluster to false if node->cost > 0

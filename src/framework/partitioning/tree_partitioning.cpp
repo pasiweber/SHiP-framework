@@ -11,9 +11,10 @@
     It bases the labelling on the first "true" encountered top down and ignores those further down.
 
 */
-std::vector<long long> label_clusters(std::shared_ptr<Node> tree) {
+std::tuple<std::vector<long long>, std::vector<long long>> label_clusters(std::shared_ptr<Node> tree) {
     long long n = tree->size;
     std::vector<long long> labels(n);
+    std::vector<long long> centers;
 
     long long ctr = -1;
     std::vector<std::pair<std::shared_ptr<Node>, bool>> stack;
@@ -29,6 +30,7 @@ std::vector<long long> label_clusters(std::shared_ptr<Node> tree) {
             } else {
                 if (curr_node->is_cluster) {  // In the case that mcs = 1 and this actually becomes a cluster (if no clusters seen higher up in recursion)
                     ctr++;
+                    centers.push_back(curr_node->id);
                     labels[curr_node->id] = ctr;
                 } else {
                     labels[curr_node->id] = -1;
@@ -38,6 +40,7 @@ std::vector<long long> label_clusters(std::shared_ptr<Node> tree) {
             if (!within_cluster && curr_node->is_cluster) {
                 within_cluster = true;
                 ctr++;
+                centers.push_back(curr_node->anno ? curr_node->anno->center : curr_node->id);
             }
             for (std::shared_ptr<Node> child : curr_node->children) {  // Recurse and update the ctr as we go so that we ensure each cluster gets unique id.
                 stack.emplace_back(child, within_cluster);
@@ -45,7 +48,7 @@ std::vector<long long> label_clusters(std::shared_ptr<Node> tree) {
         }
     }
 
-    return labels;
+    return {labels, centers};
 }
 
 
@@ -53,36 +56,36 @@ std::vector<long long> label_clusters(std::shared_ptr<Node> tree) {
     For get_k_solution we always start from the top of the tree and do it top down instead of from a potential previous solution.
     It works by taking the nodes above the cut of any nodes with annotated k values > k.
 */
-std::vector<long long> Tree::kcenter_cut(long long k) {
+std::tuple<std::vector<long long>, std::vector<long long>> Tree::kcenter_cut(long long k) {
     return k_solution(k, this->root);
 }
 
-std::vector<long long> Tree::kcenter_elbow_cut(bool triangle) {
+std::tuple<std::vector<long long>, std::vector<long long>> Tree::kcenter_elbow_cut(bool triangle) {
     return k_solution(get_elbow_k(triangle), this->root);
 }
 
-std::vector<long long> Tree::threshold_elbow_cut() {
+std::tuple<std::vector<long long>, std::vector<long long>> Tree::threshold_elbow_cut() {
     long long k = threshold();
     return label_clusters_merge(this->root, k);
 }
 
-std::vector<long long> Tree::threshold_cut(long long k) {
+std::tuple<std::vector<long long>, std::vector<long long>> Tree::threshold_cut(long long k) {
     k = threshold(k);
     return label_clusters_merge(this->root, k);
 }
 
-std::vector<long long> Tree::stability_cut(unsigned long long mcs) {
+std::tuple<std::vector<long long>, std::vector<long long>> Tree::stability_cut(unsigned long long mcs) {
     bottom_up_cluster(this->root, mcs);
     return label_clusters_merge(this->root);
 }
 
-std::vector<long long> Tree::normalized_stability_cut(unsigned long long mcs) {
+std::tuple<std::vector<long long>, std::vector<long long>> Tree::normalized_stability_cut(unsigned long long mcs) {
     bottom_up_cluster_normalized(this->root, mcs);
     return label_clusters_merge(this->root);
 }
 
 
-std::vector<long long> Tree::threshold_q_coverage(long long k, unsigned long long minPts, bool prune_stem, bool elbow, bool use_full_tree_elbow) {
+std::tuple<std::vector<long long>, std::vector<long long>> Tree::threshold_q_coverage(long long k, unsigned long long minPts, bool prune_stem, bool elbow, bool use_full_tree_elbow) {
     std::vector<std::shared_ptr<Node>> full_tree_sorted = this->sorted_nodes;  // Save the old sorted list to reinstate it after pruned tree computations
     this->sorted_nodes = prune_tree_fast(full_tree_sorted, minPts);
 
@@ -110,7 +113,7 @@ std::vector<long long> Tree::threshold_q_coverage(long long k, unsigned long lon
 }
 
 
-std::vector<long long> Tree::get_lca_prune_solution(bool triangle) {
+std::tuple<std::vector<long long>, std::vector<long long>> Tree::get_lca_prune_solution(bool triangle) {
     unsigned long long k = 0;
     if (triangle) {
         k = elbow_triangle(this->costs);  // This currently uses the triangle method
@@ -122,9 +125,10 @@ std::vector<long long> Tree::get_lca_prune_solution(bool triangle) {
         ids.insert(this->k_solutions[i]->center);
     }
     mark_tree(this->root, ids);
-    std::vector<long long> res = label_clusters(this->root);
+    std::vector<long long> labels, centers;
+    std::tie(labels, centers) = std::move(label_clusters(this->root));
     clean_tree(this->root);
-    return res;
+    return {labels, centers};
 }
 
 
@@ -175,21 +179,25 @@ long long Tree::mark_tree(std::shared_ptr<Node> tree, std::set<long long> center
     Updates the current internal solution, which is a at most 2 deep, flat, tree structure with "fake" nodes pointing to the real nodes of the k solution.
     Can take as input either the full tree or a lower k solution.
 */
-std::vector<long long> Tree::k_solution(long long k, std::shared_ptr<Node> curr_solution) {
+std::tuple<std::vector<long long>, std::vector<long long>> Tree::k_solution(long long k, std::shared_ptr<Node> curr_solution) {
     long long n = this->root->size;
     if (k >= n) {            // If k >= n all points should just be output
-        return index_order;  // Just return each id as a unique point as default for any invalid parameter for now.
+        return {index_order, index_order};  // Just return each id as a unique point as default for any invalid parameter for now.
     } else if (k <= 1) {
-        return std::vector<long long>(n);
+        return {
+            std::vector<long long>(n),
+            std::vector<long long>(1, this->root->anno ? this->root->anno->center : this->root->id)
+        };
     } else {
         std::shared_ptr<Node> solution_holder(std::make_shared<Node>(-1, 0.0));
         solution_holder->k = -1;  // This has a default k value that should never be part of a solution
 
         get_k_solution_helper(k, curr_solution, solution_holder);  // Constructs the solution
-        std::vector<long long> res(n, -1);
-        extract_labels(res, solution_holder);  // Extract labels from solution into res
+        std::vector<long long> labels(n, -1);
+        std::vector<long long> centers;
+        extract_labels(labels, centers, solution_holder);  // Extract labels from solution into res
 
-        return res;
+        return {labels, centers};
     }
 }
 
@@ -251,10 +259,10 @@ void Tree::get_k_solution_helper(long long k, std::shared_ptr<Node> fullTree, st
 /*
     Helper function that labels all nodes in a tree with given label using quick pointers.
 */
-void Tree::label_tree(std::vector<long long>& res, std::shared_ptr<Node> tree, long long label) {
+void Tree::label_tree(std::vector<long long>& labels, std::shared_ptr<Node> tree, long long label) {
     for (long long i = tree->low; i <= tree->high; i++) {
         long long id = this->index_order[i];
-        res[id] = label;
+        labels[id] = label;
     }
 }
 
@@ -262,15 +270,18 @@ void Tree::label_tree(std::vector<long long>& res, std::shared_ptr<Node> tree, l
     This function takes the solution container (which is a "pseudo" node) and loops through its children of real solution nodes
     to output the cluster labels.
 */
-void Tree::extract_labels(std::vector<long long>& res, std::shared_ptr<Node> solution) {
+void Tree::extract_labels(std::vector<long long>& res, std::vector<long long>& centers, std::shared_ptr<Node> solution) {
     long long label = 0;
     for (std::shared_ptr<Node> child : solution->children) {
         if (child->size != 0) {
             label_tree(res, child, label);
+            centers.push_back(child->anno ? child->anno->center : child->id);
         } else {
             for (std::shared_ptr<Node> child2 : child->children) {
                 label_tree(res, child2, label);
             }
+            std::shared_ptr<Node> child2 = child->children[0];
+            centers.push_back(child2->anno ? child2->anno->center : child2->id);
         }
         label++;
     }
@@ -283,7 +294,7 @@ void Tree::extract_labels(std::vector<long long>& res, std::shared_ptr<Node> sol
     This labels based on the highest node that is a cluster. The bottom_up_cluster algorithm labels all clusters that win as true bottom up.
     *THIS CAN ALSO BE USED WHEN NO IS_MERGER IS PRESENT, i.e. for HDBSCAN*
 */
-void Tree::label_clusters_helper_merge(std::shared_ptr<Node> tree, std::vector<long long>& labels, long long k) {
+void Tree::label_clusters_helper_merge(std::shared_ptr<Node> tree, std::vector<long long>& labels, std::vector<long long>& centers, long long k) {
     long long ctr = -1;
     std::vector<std::shared_ptr<Node>> stack;
     stack.push_back(tree);
@@ -291,9 +302,11 @@ void Tree::label_clusters_helper_merge(std::shared_ptr<Node> tree, std::vector<l
         std::shared_ptr<Node> curr_tree = stack.back();
         stack.pop_back();
         if (curr_tree->is_merger) {
+            centers.push_back(k - 1);
             label_tree(labels, curr_tree, k - 1);
         } else if (curr_tree->is_cluster) {
             ctr++;
+            centers.push_back(ctr);
             label_tree(labels, curr_tree, ctr);
         } else if (curr_tree->children.size() != 0) {
             for (auto it = curr_tree->children.rbegin(); it != curr_tree->children.rend(); ++it) {
@@ -305,14 +318,15 @@ void Tree::label_clusters_helper_merge(std::shared_ptr<Node> tree, std::vector<l
     }
 }
 
-std::vector<long long> Tree::label_clusters_merge(std::shared_ptr<Node> tree, long long k) {
+std::tuple<std::vector<long long>, std::vector<long long>> Tree::label_clusters_merge(std::shared_ptr<Node> tree, long long k) {
     long long n = tree->size;
-    std::vector<long long> arr;
-    arr.resize(n);
-    label_clusters_helper_merge(tree, arr, k);
+    std::vector<long long> labels;
+    labels.resize(n);
+    std::vector<long long> centers;
+    label_clusters_helper_merge(tree, labels, centers, k);
 
     clean_tree(tree);
-    return arr;
+    return {labels, centers};
 }
 
 

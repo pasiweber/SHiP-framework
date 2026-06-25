@@ -95,6 +95,13 @@ inline void bind_SHiP(py::module_ &m) {
             Available after calling `.fit()` or `.fit_predict()`.
             )pbdoc")
 
+        .def_readonly("cluster_centers_", &SHiP::cluster_centers_,
+                      R"pbdoc(
+            IDs of the cluster centers.
+
+            Available after calling `.fit()` or `.fit_predict()`.
+            )pbdoc")
+
         .def_readonly("partitioning_runtime", &SHiP::partitioning_runtime,
                       R"pbdoc(
             Time spent during the partitioning phase (in microseconds).
@@ -115,6 +122,7 @@ inline void bind_SHiP(py::module_ &m) {
                 "partitioningMethod",
                 "config",
                 "labels_",
+                "cluster_centers_",
                 "partitioning_runtime",
                 "tree_construction_runtime",
                 "fit",
@@ -136,7 +144,7 @@ inline void bind_SHiP(py::module_ &m) {
 
 
         /// Constructors ///
-        .def(py::init([](py::object py_data, py::object py_tt, long long hierarchy, py::object py_pm, const py::dict &py_cfg) {
+        .def(py::init([](py::object py_data, py::object py_tt, double hierarchy, py::object py_pm, const py::dict &py_cfg) {
                  std::vector<std::vector<double>> data;
                  if (py::isinstance<py::array>(py_data)) {
                      data = pyarray_to_vector2D(py_data);
@@ -187,9 +195,9 @@ inline void bind_SHiP(py::module_ &m) {
                     Can be specified as an enum member (e.g., ``UltrametricTreeType.DCTree``)
                     or as a string (e.g., ``"DCTree"``). Defaults to ``DCTree``.
 
-                hierarchy : int, optional
+                hierarchy : float, optional
                     Select hierarchy used when transforming the similarity structure.
-                    Controls how distances are scaled. (Distances to the center are taken to the power of `hierarchy`.) Default is ``2``.
+                    Controls how distances are scaled. (Distances to the center are taken to the power of `hierarchy`.) Default is ``1``.
 
                 partitioningMethod : Union[PartitioningMethod, str], optional
                     Partitioning strategy to extract flat clusters from the hierarchy.
@@ -211,9 +219,9 @@ inline void bind_SHiP(py::module_ &m) {
         // fit
         .def("fit", ([](SHiP &self, py::object py_hierarchy, py::object py_pm, const py::dict &py_cfg) {
                  // Handle optional hierarchy parameter
-                 std::optional<long long> hierarchy;
+                 std::optional<double> hierarchy;
                  if (!py_hierarchy.is_none()) {
-                    hierarchy = py_hierarchy.cast<long long>();
+                    hierarchy = py_hierarchy.cast<double>();
                  }
 
                  // Handle optional partitioning method
@@ -240,7 +248,7 @@ inline void bind_SHiP(py::module_ &m) {
 
         Parameters
         ----------
-        hierarchy : int, optional
+        hierarchy : float, optional
             Which hierarchy (power exponent) to use for tree construction. If not provided, the value from initialization is used.
 
         partitioningMethod : PartitioningMethod or str, optional
@@ -269,9 +277,9 @@ inline void bind_SHiP(py::module_ &m) {
         // fit_predict
         .def("fit_predict", ([](SHiP &self, py::object py_hierarchy, py::object py_pm, const py::dict &py_cfg) {
                  // Handle optional hierarchy parameter
-                 std::optional<long long> hierarchy;
+                 std::optional<double> hierarchy;
                  if (!py_hierarchy.is_none()) {
-                     hierarchy = py_hierarchy.cast<long long>();
+                     hierarchy = py_hierarchy.cast<double>();
                  }
 
                  // Handle optional partitioning method
@@ -297,9 +305,8 @@ inline void bind_SHiP(py::module_ &m) {
 
         Parameters
         ----------
-        hierarchy : int, optional
-            Which hierarchy (power exponent) to use for tree construction. If not provided, uses the default or value
-            passed during initialization.
+        hierarchy : float, optional
+            Which hierarchy (power exponent) to use for tree construction. If not provided, uses the default value passed during initialization.
 
         partitioningMethod : PartitioningMethod or str, optional
             Partitioning strategy used to flatten the hierarchy into clusters. Accepts either a `PartitioningMethod`
@@ -325,14 +332,14 @@ inline void bind_SHiP(py::module_ &m) {
 
 
         // get_tree
-        .def("get_tree", &SHiP::get_tree, py::arg("hierarchy") = 0,
+        .def("get_tree", &SHiP::get_tree, py::arg("hierarchy"),
              R"pbdoc(
            Retrieve the similarity tree constructed of a given hierarchy.
 
            Parameters
            ----------
-           hierarchy : int, optional
-               Get the ultrametric tree of `hierarchy`. Default is the base tree (`hierarchy=0`).
+           hierarchy : float
+               Get the ultrametric tree of `hierarchy`.
 
            Returns
            -------

@@ -93,7 +93,7 @@ void Tree::annotate_tree(std::shared_ptr<Node> root, std::vector<std::vector<dou
     });
 
     // Only apply heuristic if it is not the base tree
-    if (this->hierarchy != 0) {
+    if (this->hierarchy > 0.0) {
         // Create the tree with heuristics based placement of equidistant branches. This is why we need the dataset here.
         std::vector<std::string> keys = {"tiebreaker_method", "tiebreaker"};
         std::vector<std::string> euclidean_aliases = {"euclidean_distance", "euclidean_dist", "euclidean"};

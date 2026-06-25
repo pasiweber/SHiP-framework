@@ -69,6 +69,14 @@ inline void bind_Node(py::module_ &m) {
     The root has the lowest level 0.
     )pbdoc")
 
+        .def_property_readonly("center", [](const Node& self) -> long long {
+            return self.anno ? self.anno->center : self.id;
+        },
+                      R"pbdoc(
+    Index of corresponding center of this node.
+    )pbdoc")
+
+
         // Comparison operators
         .def(
             "__lt__", [](const Node &self, const Node &other) { return self < other; },

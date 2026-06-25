@@ -15,7 +15,7 @@ struct Node;  // Forward declaration for circular dependencies
     It bases the labelling on the first "true" encountered top down and ignores those further down.
 
 */
-std::vector<long long> label_clusters(std::shared_ptr<Node> tree);
+std::tuple<std::vector<long long>, std::vector<long long>> label_clusters(std::shared_ptr<Node> tree);
 
 
 /*

@@ -6,11 +6,16 @@
 #include <pch.hpp>
 
 
-Tree::Tree(std::shared_ptr<Node> root, std::vector<std::vector<double>>& data, UltrametricTreeType tree_type, long long hierarchy, const std::unordered_map<std::string, std::string>& config) : tree_type(tree_type), hierarchy(hierarchy), config(config) {
+Tree::Tree(std::shared_ptr<Node> root, std::vector<std::vector<double>>& data, UltrametricTreeType tree_type, double hierarchy, const std::unordered_map<std::string, std::string>& config) : tree_type(tree_type), hierarchy(hierarchy), config(config) {
+    if (hierarchy < 0.0) {
+        LOG_ERROR << "Hierarchy can't be < 0.";
+        throw std::runtime_error("Hierarchy can't be < 0.");
+    }
+
     // Annotate tree to get the k_clustering for the current hierarchy
     this->annotate_tree(root, data);
-
-    if (hierarchy == 0) {
+    
+    if (hierarchy == 0.0) {
         this->root = root;
     } else {
         // Build the new tree from the annotated information
@@ -28,7 +33,7 @@ Tree::Tree(std::shared_ptr<Node> root, std::vector<std::vector<double>>& data, U
     this->compute_sorted_nodes();
     this->compute_sorted_costs();
 
-    if (hierarchy == 0) {
+    if (hierarchy == 0.0) {
         this->assign_nodes_their_k_values();
     }
 }
