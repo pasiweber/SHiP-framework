@@ -9,8 +9,11 @@ __pycache__/
 .cache/
 
 CMakeUserPresets.json
-build/
+build*/
 dist/
 
 docs/build/
 docs/doxygen
+
+# stub files will be generated automatically, do not track them
+/SHiP/

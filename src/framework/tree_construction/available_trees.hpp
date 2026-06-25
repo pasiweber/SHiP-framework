@@ -26,7 +26,7 @@ enum class UltrametricTreeType {
     ///
     /// **Parameters:**
     /// - `min_points` (default: `5`): Compute *core_dist* by using the distance to the min_points' nearest neighbor of a point.
-    /// - `relaxed` (default: `true`): Set the identity distance of the points (leave nodes) to the *core_dist*.
+    /// - `relaxed` (default: `false`): Set the identity distance of the points (leave nodes) to the *core_dist*.
     DCTree,
 
     /// Hierarchically Separated Tree (HST): uses recursive metric partitions to ensure separation properties 

@@ -8,7 +8,7 @@
 std::shared_ptr<UltrametricTreeNode> build_DCTree(std::vector<std::vector<double>> &data, const std::unordered_map<std::string, std::string> &config) {
     long long min_points = get_config_value_in_range<long long>(config, "min_points", 5, 1, (long long)data.size());
 
-    bool relaxed = get_config_value(config, "relaxed", true);
+    bool relaxed = get_config_value(config, "relaxed", false);
     return construct_dc_tree(data, min_points, relaxed);
 }
 

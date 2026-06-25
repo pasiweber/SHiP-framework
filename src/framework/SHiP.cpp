@@ -26,7 +26,9 @@ void SHiP::fit(std::optional<long long> hierarchy, std::optional<PartitioningMet
     if (partitioning_method.has_value()) {
         this->partitioning_method = partitioning_method.value();
     }
-    this->config.insert(config.begin(), config.end());
+    for (const auto& [key, value] : config) {
+       this->config[key] = value;
+    }
 
     long long tree_construction_runtime_sum_previously = 0;
     for (auto const& [key, runtime] : this->tree_construction_runtime) {
@@ -56,12 +58,25 @@ std::vector<long long> SHiP::fit_predict(std::optional<long long> hierarchy, std
 
 // Build tree for given `tree_type`
 std::shared_ptr<Tree> SHiP::construct_base_tree(std::vector<std::vector<double>>& data) {
-    UltrametricTree ultrametricTree = constructUltrametricTree(data, this->tree_type, this->config);
-    std::shared_ptr<Node> root = convertUltrametricTreeNodeToNode(ultrametricTree.root);
-    auto tree = std::make_shared<Tree>(root, data, ultrametricTree.tree_type, 0, ultrametricTree.config);
-    this->tree_type = tree->tree_type;
-    this->config = tree->config;
-    return tree;
+    if (data.empty()) {
+        LOG_ERROR << "Input data is empty!";
+        throw std::invalid_argument("Input data is empty!");
+    }
+    if (data.size() == 1) {
+        auto child = std::make_shared<Node>(0, 0);
+        auto root = std::make_shared<Node>(1, 0.1, std::vector<std::shared_ptr<Node>>{child});
+        child->parent = root;
+        root->size = 1;
+        auto tree = std::make_shared<Tree>(root, data, this->tree_type, 0, this->config);
+        return tree;
+    } else {
+        UltrametricTree ultrametricTree = constructUltrametricTree(data, this->tree_type, this->config);
+        std::shared_ptr<Node> root = convertUltrametricTreeNodeToNode(ultrametricTree.root);
+        auto tree = std::make_shared<Tree>(root, data, ultrametricTree.tree_type, 0, ultrametricTree.config);
+        this->tree_type = tree->tree_type;
+        this->config = tree->config;
+        return tree;
+    }
 }
 
 
